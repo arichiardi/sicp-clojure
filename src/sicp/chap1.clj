@@ -7,7 +7,6 @@
 ;; Below is a sequence of expressions. What is the result printed
 ;; by the interpreter in response to each expression? Assume that the
 ;; sequence is to be evaluated in the order in which it is presented.
-
 (t/deftest chap1-1.1
   (t/is (= 10 10))
   (t/is (= 12 (+ 5 3 4)))
@@ -15,8 +14,8 @@
   (t/is (= 3 (/ 6 2)))
   (t/is (= 6 (+ (* 2 4) (- 4 6))))
 
-  (t/is (= #'sicp.chap1/a (def a 3)))
-  (t/is (= #'sicp.chap1/b (def b (+ a 1))))
+  (def a 3)
+  (def b (+ a 1))
 
   (t/is (= 19 (+ a b (* a b))))
   (t/is (= false (= a b)))
@@ -41,8 +40,8 @@
 ; Exercise 1.2
 ;; Translate the following expression into prefix form.
 (defn prefix-expr []
-  (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5)))))
-     (* 3 (- 6 2) (- 2 7)))
+  (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5))))
+     (* 3 (- 6 2) (- 2 7))))
 
 
 ; Exercise 1.3
@@ -53,7 +52,7 @@
 (defn square-sum-largest-pair [a b c]
   "Sums the square of the largest two number of the three in input."
   (let [max-of-a-b (max a b)
-        min-of-a-b (min a b)]
+        min-of-a-b (if (= max-of-a-b a) b a)]
         (+ (m/expt max-of-a-b 2) (m/expt (max min-of-a-b c) 2))))
 
 
@@ -90,7 +89,6 @@
 
 ;; (ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow, which
 ;; means that Clojure's interpreter is evaluating in applicative-order.
-
 
 (t/deftest chap1-others
   (t/is (= (prefix-expr) -37/150) "1.2\\) Should result in -37/150")
