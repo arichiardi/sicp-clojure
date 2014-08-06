@@ -5,4 +5,5 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [leiningen "2.4.2"]
                  [org.clojure/math.numeric-tower "0.0.4"]]
-  :global-vars { *warn-on-reflection* true })
+  :global-vars { *warn-on-reflection* true }
+  :repl-options {:init (set! *print-length* 200)})

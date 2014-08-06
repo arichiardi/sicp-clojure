@@ -37,7 +37,6 @@
   given to this one."
   (fn [x y]
     (let [scale (if (and (not (zero? x)) (not (zero? y))) (m/abs x) 1)]
-      (println scale)
       (< (m/abs (- x y)) (* scale epsilon)))))
 
 (def equal-to?
