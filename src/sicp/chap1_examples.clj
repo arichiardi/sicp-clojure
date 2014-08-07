@@ -2,7 +2,7 @@
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m]))
 
-; 1.1.7  Example: Square Roots by Newton's Method
+;;;; 1.1.7  Example: Square Roots by Newton's Method
 ;; No changes from the original
 (defn average [x y]
   (/ (+ x y) 2))
@@ -11,7 +11,7 @@
   (average guess (/ x guess)))
 
 (defn good-enough? [guess x]
-  (< (m/abs (- (m/expt guess 2) x)) 0.001))
+  (< (m/abs (- (* guess guess) x)) 0.001))
 
 (defn sqrt-iter [guess x]
   (if (good-enough? guess x)

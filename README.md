@@ -4,7 +4,7 @@ sicp-clojure
 Material from Structure and Interpretation of Computer Programs, in Clojure.
 
 **Disclaimer**:
-This is not an attempt to produce perfect code, it has been written while learning Clojure, in an attempt of both reading a great Computer Science book and doing its exercises using a modern Lisp-like language.
+This is not an attempt to produce perfect code, it has been written while learning Clojure, in an effort of both reading a great Computer Science book and doing its exercises using a modern Lisp-like language.
 
 ###### License
 

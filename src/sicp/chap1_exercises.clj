@@ -1,9 +1,9 @@
 (ns sicp.chap1-exercises
-  (:require [clojure.test :as t]
+  (:require :reload-all [clojure.test :as t]
             [clojure.math.numeric-tower :as m]
             [sicp.chap1-examples :as examples]))
 
-; Exercise 1.1
+;;; Exercise 1.1
 ;; Below is a sequence of expressions. What is the result printed
 ;; by the interpreter in response to each expression? Assume that the
 ;; sequence is to be evaluated in the order in which it is presented.
@@ -37,14 +37,14 @@
              (+ a 1)))))
 
 
-; Exercise 1.2
+;;; Exercise 1.2
 ;; Translate the following expression into prefix form.
 (defn prefix-expr []
   (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5))))
      (* 3 (- 6 2) (- 2 7))))
 
 
-; Exercise 1.3
+;;; Exercise 1.3
 ;; Define a procedure that takes three numbers as arguments
 ;; and returns the sum of the squares of the two larger numbers.
 ;; Have a look at the excellent answer to my doubt on stackoverflow:
@@ -55,7 +55,7 @@
         (+ (m/expt fst 2) (m/expt snd 2))))
 
 
-; Exercise 1.4
+;;; Exercise 1.4
 ;; Observe that our model of evaluation allows for combinations whose
 ;; operators are compound expressions. Use this observation to describe
 ;; the behavior of the following procedure.
@@ -66,30 +66,30 @@
 ;; the if, when it is evaluated it will be used to sum (or subtract) a and b.
 
 
-; Exercise 1.5
+;;; Exercise 1.5
 (defn p [] (p))
 
 (defn ben-bitdiddle-test [x y]
   (if (= x 0) 0 y))
 
 ;; applicative-order would be:
-;;; (ben-bitdiddle-test 0 p)
-;;; (if (= 0 0) 0 p)
-;;; (if (= 0 0) 0 (p)) ; p is evaluated before the if.
-;;; (if (= 0 0) 0 (p)) ; p evaluates to itself.
-;;; (if (= 0 0) 0 (p)) ; same
-;;; (stack overflow)
+;; (ben-bitdiddle-test 0 p)
+;; (if (= 0 0) 0 p)
+;; (if (= 0 0) 0 (p)) ; p is evaluated before the if.
+;; (if (= 0 0) 0 (p)) ; p evaluates to itself.
+;; (if (= 0 0) 0 (p)) ; same
+;; (stack overflow)
 
 ;; normal-order would be:
-;;; (ben-bitdiddle-test 0 p)
-;;; (if (= 0 0) 0 p)
-;;; (if (= 0 0) 0 (p)) ; just substitution, not evaluation.
-;;; (0)
+;; (ben-bitdiddle-test 0 p)
+;; (if (= 0 0) 0 p)
+;; (if (= 0 0) 0 (p)) ; just substitution, not evaluation.
+;; (0)
 
-;;(ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow
+; (ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow
 
 
-; Exercise 1.6
+;;; Exercise 1.6
 (defn new-if [predicate then-clause else-clause]
   (cond
    (do predicate) then-clause
@@ -109,7 +109,71 @@
 ;; As a consequence, in this case the else-clause, which is a recursive call to sqrt-iter-alyssa,
 ;; gets evaluated with always the same parameters and will therefore produce a stack overflow.
 
-;;(sqrt-alyssa 2) ; Uncommenting this will cause a stack overflow
+; (sqrt-alyssa 2) ; Uncommenting this will cause a stack overflow
+
+
+;;; Exercise 1.7
+;; The good-enough? test used in computing square roots will not be very effective for finding
+;; the square roots of very small numbers. Also, in real computers, arithmetic operations are
+;; almost always performed with limited precision. This makes our test inadequate for very large
+;; numbers. Explain these statements, with examples showing how the test fails for small and large
+;; numbers.
+
+;; The test with a tiny number fails because the guess is starting from a number that will
+;; not be significantly changed by the subtraction of the tiny x.
+;; As soon as the guess (squared) reaches the threshold (0.001 in the book), < will
+;; evaluated to true.
+;; Ex.: (At some point) (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001))
+(examples/sqrt 1.4e-30)
+
+;; With such a big number (almost DOUBLE_MAX) the < test will never be true because there
+;; is no space, in the floating point representation of the number, for decimals.
+; (examples/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
+
+(defn better-good-enough? [guess prev-guess]
+  (< (m/abs (- guess prev-guess)) 1.0e-30))
+
+(defn better-sqrt-iter [guess prev-guess x]
+  (if (better-good-enough? guess prev-guess)
+    guess
+    (better-sqrt-iter (examples/improve guess x) guess x)))
+
+(defn better-sqrt [x]
+  (better-sqrt-iter 1.0 0.0 x))
+
+
+(t/deftest chap1-1.7
+  ;; The better-good-enough? function should be better for small numbers, as the iteration
+  ;; will go on and on until the new guess cannot be improved anymore and, consequently,
+  ;; (m/abs (- guess prev-guess)) will be equal to more than the tiny threshold.
+  (t/is (examples/equal-to? 1.1832159566199232E-15 (better-sqrt 1.4e-30)))
+
+  ;; For big numbers it is the same.
+  (t/is (examples/equal-to? 1.3038404810405297E154 (better-sqrt 1.7e+308))))
+
+;; An alternative strategy for implementing good-enough? is to watch how guess changes from one
+;; iteration to the next and to stop when the change is a very small fraction of the guess.
+;; Design a square-root procedure that uses this kind of end test. Does this work better for
+;; small and large numbers?
+
+
+;;; Exercise 1.8
+(defn cube-improve [guess x]
+  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+(defn cube-root-iter [guess prev-guess x]
+  (if (better-good-enough? guess prev-guess)
+    guess
+    (cube-root-iter (cube-improve guess x) guess x)))
+
+(defn cube-root [x]
+  (cube-root-iter 1.0 0.0 x))
+
+(t/deftest chap1-1.8
+  (t/is (examples/equal-to? 3 (cube-root 27)))
+  (t/is (examples/equal-to? 4.32674871092222 (cube-root 81)))
+  (t/is (examples/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)))
+  (t/is (examples/equal-to? 5.539658256754465E102 (cube-root 1.7e+308))))
 
 
 (t/deftest chap1-others
