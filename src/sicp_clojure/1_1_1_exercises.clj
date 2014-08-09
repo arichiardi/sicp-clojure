@@ -1,40 +1,13 @@
-(ns sicp.chap1-exercises
+(ns sicp-clojure.1-1-1-exercises
   (:require :reload-all [clojure.test :as t]
             [clojure.math.numeric-tower :as m]
-            [sicp.chap1-examples :as examples]))
+            [sicp-clojure.1-1-1-samples :as samples]))
 
 ;;; Exercise 1.1
 ;; Below is a sequence of expressions. What is the result printed
 ;; by the interpreter in response to each expression? Assume that the
 ;; sequence is to be evaluated in the order in which it is presented.
-(t/deftest chap1-1.1
-  (t/is (= 10 10))
-  (t/is (= 12 (+ 5 3 4)))
-  (t/is (= 8 (- 9 1)))
-  (t/is (= 3 (/ 6 2)))
-  (t/is (= 6 (+ (* 2 4) (- 4 6))))
-
-  (def a 3)
-  (def b (+ a 1))
-
-  (t/is (= 19 (+ a b (* a b))))
-  (t/is (= false (= a b)))
-
-  (t/is (= 4 (if (and (> b a) (< b (* a b)))
-                b
-                a)))
-
-  (t/is (= 16 (cond
-               (= a 4) 6
-               (= b 4) (+ 6 7 a)
-               true 25)))
-
-  (t/is (= 6 (+ 2 (if (> b a) b a))))
-
-  (t/is (= 16 (* (cond (> a b) a
-                     (< a b) b
-                     true -1)
-             (+ a 1)))))
+; See tests at the bottom.
 
 
 ;;; Exercise 1.2
@@ -96,9 +69,9 @@
    :else else-clause))
 
 (defn sqrt-iter-alyssa [guess x]
-  (new-if (examples/good-enough? guess x)
+  (new-if (samples/good-enough? guess x)
           guess
-          (sqrt-iter-alyssa (examples/improve guess x) x)))
+          (sqrt-iter-alyssa (samples/improve guess x) x)))
 
 (defn sqrt-alyssa [x]
   (sqrt-iter-alyssa 1.0 x))
@@ -116,7 +89,7 @@
 ;; The good-enough? test used in computing square roots will not be very effective for finding
 ;; the square roots of very small numbers. Also, in real computers, arithmetic operations are
 ;; almost always performed with limited precision. This makes our test inadequate for very large
-;; numbers. Explain these statements, with examples showing how the test fails for small and large
+;; numbers. Explain these statements, with samples showing how the test fails for small and large
 ;; numbers.
 
 ;; The test with a tiny number fails because the guess is starting from a number that will
@@ -124,11 +97,11 @@
 ;; As soon as the guess (squared) reaches the threshold (0.001 in the book), < will
 ;; evaluated to true.
 ;; Ex.: (At some point) (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001))
-(examples/sqrt 1.4e-30)
+(samples/sqrt 1.4e-30)
 
 ;; With such a big number (almost DOUBLE_MAX) the < test will never be true because there
 ;; is no space, in the floating point representation of the number, for decimals.
-; (examples/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
+; (samples/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
 
 (defn better-good-enough? [guess prev-guess]
   (< (m/abs (- guess prev-guess)) 1.0e-30))
@@ -136,20 +109,18 @@
 (defn better-sqrt-iter [guess prev-guess x]
   (if (better-good-enough? guess prev-guess)
     guess
-    (better-sqrt-iter (examples/improve guess x) guess x)))
+    (better-sqrt-iter (samples/improve guess x) guess x)))
 
 (defn better-sqrt [x]
   (better-sqrt-iter 1.0 0.0 x))
 
+;; The better-good-enough? function should be better for small numbers, as the iteration
+;; will go on and on until the new guess cannot be improved anymore and, consequently,
+;; (m/abs (- guess prev-guess)) will be equal to more than the tiny threshold.
+(better-sqrt 1.4e-30)
 
-(t/deftest chap1-1.7
-  ;; The better-good-enough? function should be better for small numbers, as the iteration
-  ;; will go on and on until the new guess cannot be improved anymore and, consequently,
-  ;; (m/abs (- guess prev-guess)) will be equal to more than the tiny threshold.
-  (t/is (examples/equal-to? 1.1832159566199232E-15 (better-sqrt 1.4e-30)))
-
-  ;; For big numbers it is the same.
-  (t/is (examples/equal-to? 1.3038404810405297E154 (better-sqrt 1.7e+308))))
+;; For big numbers it is the same.
+(better-sqrt 1.7e+308)
 
 ;; An alternative strategy for implementing good-enough? is to watch how guess changes from one
 ;; iteration to the next and to stop when the change is a very small fraction of the guess.
@@ -169,14 +140,29 @@
 (defn cube-root [x]
   (cube-root-iter 1.0 0.0 x))
 
-(t/deftest chap1-1.8
-  (t/is (examples/equal-to? 3 (cube-root 27)))
-  (t/is (examples/equal-to? 4.32674871092222 (cube-root 81)))
-  (t/is (examples/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)))
-  (t/is (examples/equal-to? 5.539658256754465E102 (cube-root 1.7e+308))))
 
-
-(t/deftest chap1-others
+(t/deftest tests
+  (t/is (= 10 10) "1.1\\) Checking results.")
+  (t/is (= 12 (+ 5 3 4)) "1.1\\) Checking results.")
+  (t/is (= 8 (- 9 1)) "1.1\\) Checking results.")
+  (t/is (= 3 (/ 6 2)) "1.1\\) Checking results.")
+  (t/is (= 6 (+ (* 2 4) (- 4 6))) "1.1\\) Checking results.")
+  (def a 3)
+  (def b (+ a 1))
+  (t/is (= 19 (+ a b (* a b))) "1.1\\) Checking results.")
+  (t/is (= false (= a b)) "1.1\\) Checking results.")
+  (t/is (= 4 (if (and (> b a) (< b (* a b)))
+               b
+               a)) "1.1\\) Checking results.")
+  (t/is (= 16 (cond
+               (= a 4) 6
+               (= b 4) (+ 6 7 a)
+               true 25)) "1.1\\) Checking results.")
+  (t/is (= 6 (+ 2 (if (> b a) b a))))
+  (t/is (= 16 (* (cond (> a b) a
+                       (< a b) b
+                       true -1)
+                 (+ a 1))) "1.1\\) Checking results.")
   (t/is (= (prefix-expr) -37/150) "1.2\\) Should result in -37/150")
   (t/is (= (square-sum-largest-pair 1 4 5) 41) "1.3\\) Should correctly sum 1 4 5.")
   (t/is (= (square-sum-largest-pair 5 4 1) 41) "1.3\\) Should correctly sum 5 4 1.")
@@ -187,4 +173,8 @@
   (t/is (= 42 (a-plus-abs-b 40 -2)) "1.4\\) The answer is always 42.")
   (t/is (= 42 (a-plus-abs-b 40 2)) "1.4\\) The answer is always 42.")
   (t/is (= 5 (new-if (= 2 3) 0 5)) "1.6 \\) Alyssa test should be 5.")
-  (t/is (= 0 (new-if (= 1 1) 0 5)) "1.6 \\) Alyssa test should be 0."))
+  (t/is (= 0 (new-if (= 1 1) 0 5)) "1.6 \\) Alyssa test should be 0.")
+  (t/is (samples/equal-to? 3 (cube-root 27)) "1.8 \\) Cube root of 27.")
+  (t/is (samples/equal-to? 4.32674871092222 (cube-root 81)) "1.8 \\) Cube root of 81.")
+  (t/is (samples/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)) "1.8 \\) Cube root of a small number.")
+  (t/is (samples/equal-to? 5.539658256754465E102 (cube-root 1.7e+308)) "1.8 \\) Cube root of a big number."))
