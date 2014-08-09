@@ -4,6 +4,7 @@
 ccw.repl.cmdhistory.prefs
 .lein-repl-history
 .nrepl
+.nrepl-port
 .classpath
 .project
 
