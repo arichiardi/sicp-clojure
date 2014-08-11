@@ -37,7 +37,7 @@
 ;; once inside +.
 
 
-;;; Exercise 1.10
+;;; Exercise 1.10 - Ackermann's function
 (defn A [x y]
   (cond (= y 0) 0
         (= x 0) (* 2 y)
@@ -104,5 +104,3 @@
 
   ;; As seen above, h computes 2^2^2^... n exponentations (Knuth double up-arrow)
   (t/is (= (m/expt 2 (m/expt 2 (m/expt 2 2))) (h 4))))
-
-(t/run-tests)

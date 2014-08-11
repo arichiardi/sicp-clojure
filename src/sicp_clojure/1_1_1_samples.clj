@@ -22,7 +22,7 @@
   (sqrt-iter 1.0 x))
 
 
-;; My take to the algorithm looking at page 87 and at section "Comparing Floating-point Numbers"
+;; My take at the algorithm looking at page 87 and at section "Comparing Floating-point Numbers"
 ;; of http://gettingclojure.wikidot.com/cookbook:numbers
 (defn equality-comparison-fn [epsilon]
   "Returns a function for evaluating the equality of its two arguments.
