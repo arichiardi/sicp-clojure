@@ -35,8 +35,9 @@
 (defn a-plus-abs-b [a b]
   ((if (> b 0) + -) a b))
 
-;; The result of if is a function, which, being in first position after
-;; the if, when it is evaluated it will be used to sum (or subtract) a and b.
+;; The result of the if is an primitive procedure which in turn, when evaluated, will be used
+;; to sum a to b (if b is greater than zero) or subtract b from a (if b is less or
+;; equal zero).
 
 
 ;;; Exercise 1.5
@@ -46,17 +47,18 @@
   (if (= x 0) 0 y))
 
 ;; applicative-order would be:
-;; (ben-bitdiddle-test 0 p)
-;; (if (= 0 0) 0 p)
-;; (if (= 0 0) 0 (p)) ; p is evaluated before the if.
+;; (ben-bitdiddle-test 0 (p))
+;; (if (= 0 0) 0 (p)) ; we retrieve the body of ben-bitdiddle-test and formal parameters are replaced.
+;; (if (= 0 0) 0 (p)) ; p is evaluated because it is an expression and needs evaluation in order
+                      ; to execute the next if
 ;; (if (= 0 0) 0 (p)) ; p evaluates to itself.
 ;; (if (= 0 0) 0 (p)) ; same
 ;; (stack overflow)
 
 ;; normal-order would be:
-;; (ben-bitdiddle-test 0 p)
-;; (if (= 0 0) 0 p)
-;; (if (= 0 0) 0 (p)) ; just substitution, not evaluation.
+;; (ben-bitdiddle-test 0 (p))
+;; (if (= 0 0) 0 (p)) ; again just substitution.
+;; (if (= 0 0) 0 (p)) ; as per the special form if, the predicate is evaluted first.
 ;; (0)
 
 ; (ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow
