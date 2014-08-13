@@ -2,9 +2,9 @@
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m]))
 
-;;;; 1.1.7  Example: Square Roots by Newton's Method
+;;; 1.1.7 Example: Square Roots by Newton's Method
 ;; No changes from the original
-(defn average [x y]
+(defn- average [x y]
   (/ (+ x y) 2))
 
 (defn improve [guess x]
@@ -60,7 +60,7 @@
 (defn sqrt* [x]
   (sqrt-iter* :x x :guess 1.0))
 
-(t/deftest chap1-examples
+(t/deftest tests
   (t/is (equal-to? (+ 0.1 0.1 0.1 0.1 0.1 0.1) (* 6 0.1)) "Small number equality test.")
   (t/is (equal-to? 1.23456e38 (* 1.23456 (m/expt 10 38))) "Big number equality test.") ; doesn't work with big numbers
   (t/is (equal-to? 2.5 (average* [3 2])) "Average of [3 2]")
