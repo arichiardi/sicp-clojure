@@ -5,7 +5,6 @@
 
 ;;; 1.2.2 Example: Counting change
 ;; No changes from the original
-
 (defn count-change [amount]
   (cc amount 5))
 
@@ -23,8 +22,9 @@
                      (- kinds-of-coins 1))
                  (cc (- amount (first-denomination kinds-of-coins)))))
 
-;; My take at the problem.
-(def denomination-kind [1 5 10 25 50])
+;; The implementation of count-change in the book causes a stack overflow.
+;; Using a list instead of a lookup function solves problem and the test passes.
+(def- denomination-kind [1 5 10 25 50])
 
 (defn- cc* [amount denominations]
   "Recursive helper function to count-change."
@@ -38,8 +38,5 @@
   (cc* amount denomination-kind))
 
 
-
 (t/deftest tests
-  (t/is (= 292 (count-change* 100)))) ;; The book's algorithm produces stack overflow.
-
-(t/run-tests)
+  (t/is (= 292 (count-change* 100)))) ;; Using my alternative version for testing.
