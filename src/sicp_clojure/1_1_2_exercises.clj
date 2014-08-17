@@ -72,17 +72,33 @@
        (* 3 (recursive-f (- n 3))))))
 
 ;; iterative
-(defn- i-f-helper [n-1-sum n-2-sum n-3-sum counter]
-  (if (< counter 3)
+(defn- i-f-helper [n-1-sum n-2-sum n-3-sum i]
+  (if (< i 3)
     n-1-sum
     (i-f-helper (+ n-1-sum (* 2 n-2-sum) (* 3 n-3-sum))
                 n-1-sum
                 n-2-sum
-                (- counter 1))))
+                (- i 1))))
 
 (defn iterative-f [n]
-  (if (< n 3) n
+  (if (< n 3)
+    n
     (i-f-helper 2 1 0 n)))
+
+;; iterative with Clojure's loop construct
+(defn iterative-loop [n]
+  (if (< n 3)
+    n
+    (loop [n-1-sum 2
+           n-2-sum 1
+           n-3-sum 0
+           i n]
+      (if (< i 3)
+        n-1-sum
+        (recur (+ n-1-sum (* 2 n-2-sum) (* 3 n-3-sum))
+               n-1-sum
+               n-2-sum
+               (dec i))))))
 
 
 (t/deftest tests
@@ -150,4 +166,10 @@
   (t/is (= 2 (iterative-f 2)))
   (t/is (= 4 (iterative-f 3)))
   (t/is (= 11 (iterative-f 4)))
-  (t/is (= 335 (iterative-f 8))))
+  (t/is (= 335 (iterative-f 8)))
+  (t/is (= 0 (iterative-loop 0)))
+  (t/is (= 1 (iterative-loop 1)))
+  (t/is (= 2 (iterative-loop 2)))
+  (t/is (= 4 (iterative-loop 3)))
+  (t/is (= 11 (iterative-loop 4)))
+  (t/is (= 335 (iterative-loop 8))))
