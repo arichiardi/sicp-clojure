@@ -81,7 +81,8 @@
                 (- counter 1))))
 
 (defn iterative-f [n]
-  (i-f-helper 2 1 0 n))
+  (if (< n 3) n
+    (i-f-helper 2 1 0 n)))
 
 
 (t/deftest tests
@@ -138,13 +139,15 @@
 
   ;; As seen above, h computes 2^2^2^... n exponentations (Knuth double up-arrow)
   (t/is (= (m/expt 2 (m/expt 2 (m/expt 2 2))) (h 4)))
+  (t/is (= 0 (recursive-f 0)))
+  (t/is (= 1 (recursive-f 1)))
   (t/is (= 2 (recursive-f 2)))
   (t/is (= 4 (recursive-f 3)))
   (t/is (= 11 (recursive-f 4)))
   (t/is (= 335 (recursive-f 8)))
+  (t/is (= 0 (iterative-f 0)))
+  (t/is (= 1 (iterative-f 1)))
   (t/is (= 2 (iterative-f 2)))
   (t/is (= 4 (iterative-f 3)))
   (t/is (= 11 (iterative-f 4)))
   (t/is (= 335 (iterative-f 8))))
-
-(t/run-tests)
