@@ -5,9 +5,6 @@
 
 ;;; 1.2.2 Example: Counting change
 ;; No changes from the original
-(defn count-change [amount]
-  (cc amount 5))
-
 (defn first-denomination [kinds-of-coins]
   (cond (= kinds-of-coins 1) 1
         (= kinds-of-coins 2) 5
@@ -22,9 +19,12 @@
                      (- kinds-of-coins 1))
                  (cc (- amount (first-denomination kinds-of-coins)))))
 
+(defn count-change [amount]
+  (cc amount 5))
+
 ;; The implementation of count-change in the book causes a stack overflow.
 ;; Using a list instead of a lookup function solves problem and the test passes.
-(def- denomination-kind [1 5 10 25 50])
+(def denomination-kind [1 5 10 25 50])
 
 (defn- cc* [amount denominations]
   "Recursive helper function to count-change."
