@@ -1,6 +1,6 @@
 (ns sicp-clojure.1-1-1-exercises
   (:require :reload-all [clojure.test :as t]
-                        [clojure.math.numeric-tower :as m]
+                        [clojure.math.numeric-tower :as m :refer (expt)]
                         [sicp-clojure.1-1-1-samples :as samples]))
 
 ;;; Exercise 1.1
@@ -57,7 +57,7 @@
 
 ;; normal-order would be:
 ;; (ben-bitdiddle-test 0 (p))
-;; (if (= 0 0) 0 (p)) ; again just substitution.
+;; (if (= 0 0) 0 (p)) ; just substitution of symbols
 ;; (if (= 0 0) 0 (p)) ; as per the special form if, the predicate is evaluted first.
 ;; (0)
 
