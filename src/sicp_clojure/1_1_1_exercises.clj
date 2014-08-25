@@ -1,7 +1,7 @@
 (ns sicp-clojure.1-1-1-exercises
-  (:require :reload-all [clojure.test :as t]
-                        [clojure.math.numeric-tower :as m :refer (expt)]
-                        [sicp-clojure.1-1-1-samples :as s]))
+  (:require [clojure.test :as t]
+            [clojure.math.numeric-tower :as m :refer (expt)]
+            [sicp-clojure.1-1-1-samples :as s]))
 
 ;;; Exercise 1.1
 ;; Below is a sequence of expressions. What is the result printed

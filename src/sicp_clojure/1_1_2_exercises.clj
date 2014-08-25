@@ -263,13 +263,11 @@
   (quot x 2))
 
 (defn fast-mult [a b]
-  (println "recursive"  a b)
   (cond
    (or (= a 0) (= b 0)) 0
    (even? b) (+ (double* (fast-mult a (halve b))))
    :else (+ a (fast-mult a (- b 1)))))
 
-;(fast-mult 6 2)
 
 ;;; Exercise 1.18
 ;; Using the results of exercises 1.16 and 1.17, devise a procedure that generates
@@ -278,7 +276,6 @@
 
 ;; The following solution is iterative but grows linearly with the input.
 (defn- fast-mult-linear [a b acc]
-  (println "linear" a b acc)
   (if
     (= b 0) acc
     (fast-mult-linear a (- b 1) (+ acc (double* a)))))
@@ -291,7 +288,6 @@
 
 ;; The correct solution, where Theta(n) = O(log n) is:
 (defn- fast-mult-logarithmic [a b acc]
-  (println "log" a b acc)
   (cond
    (= b 2) (+ acc (double* a))
    (even? b) (let [half-b (halve b)]
