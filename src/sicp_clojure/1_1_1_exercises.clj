@@ -1,7 +1,7 @@
 (ns sicp-clojure.1-1-1-exercises
   (:require :reload-all [clojure.test :as t]
                         [clojure.math.numeric-tower :as m :refer (expt)]
-                        [sicp-clojure.1-1-1-samples :as samples]))
+                        [sicp-clojure.1-1-1-samples :as s]))
 
 ;;; Exercise 1.1
 ;; Below is a sequence of expressions. What is the result printed
@@ -71,9 +71,9 @@
    :else else-clause))
 
 (defn sqrt-iter-alyssa [guess x]
-  (new-if (samples/good-enough? guess x)
+  (new-if (s/good-enough? guess x)
           guess
-          (sqrt-iter-alyssa (samples/improve guess x) x)))
+          (sqrt-iter-alyssa (s/improve guess x) x)))
 
 (defn sqrt-alyssa [x]
   (sqrt-iter-alyssa 1.0 x))
@@ -99,11 +99,11 @@
 ;; As soon as the guess (squared) reaches the threshold (0.001 in the book), < will
 ;; evaluated to true.
 ;; Ex.: (At some point) (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001))
-(samples/sqrt 1.4e-30)
+; (s/sqrt 1.4e-30) ; This won't return a correct result.
 
 ;; With such a big number (almost DOUBLE_MAX) the < test will never be true because there
 ;; is no space, in the floating point representation of the number, for decimals.
-; (samples/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
+; (s/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
 
 (defn better-good-enough? [guess prev-guess]
   (< (m/abs (- guess prev-guess)) 1.0e-30))
@@ -111,7 +111,7 @@
 (defn better-sqrt-iter [guess prev-guess x]
   (if (better-good-enough? guess prev-guess)
     guess
-    (better-sqrt-iter (samples/improve guess x) guess x)))
+    (better-sqrt-iter (s/improve guess x) guess x)))
 
 (defn better-sqrt [x]
   (better-sqrt-iter 1.0 0.0 x))
@@ -176,7 +176,7 @@
   (t/is (= 42 (a-plus-abs-b 40 2)) "1.4\\) The answer is always 42.")
   (t/is (= 5 (new-if (= 2 3) 0 5)) "1.6 \\) Alyssa test should be 5.")
   (t/is (= 0 (new-if (= 1 1) 0 5)) "1.6 \\) Alyssa test should be 0.")
-  (t/is (samples/equal-to? 3 (cube-root 27)) "1.8 \\) Cube root of 27.")
-  (t/is (samples/equal-to? 4.32674871092222 (cube-root 81)) "1.8 \\) Cube root of 81.")
-  (t/is (samples/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)) "1.8 \\) Cube root of a small number.")
-  (t/is (samples/equal-to? 5.539658256754465E102 (cube-root 1.7e+308)) "1.8 \\) Cube root of a big number."))
+  (t/is (s/equal-to? 3 (cube-root 27)) "1.8 \\) Cube root of 27.")
+  (t/is (s/equal-to? 4.32674871092222 (cube-root 81)) "1.8 \\) Cube root of 81.")
+  (t/is (s/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)) "1.8 \\) Cube root of a small number.")
+  (t/is (s/equal-to? 5.539658256754465E102 (cube-root 1.7e+308)) "1.8 \\) Cube root of a big number."))

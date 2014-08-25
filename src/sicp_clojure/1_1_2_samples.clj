@@ -1,7 +1,5 @@
 (ns sicp-clojure.1-1-2-samples
-  (:require :reload-all [clojure.test :as t]
-            [clojure.repl :as r]
-            [clojure.java.javadoc :as j]))
+  (:require [clojure.test :as t]))
 
 ;;; 1.2.2 Example: Counting change
 ;; No changes from the original.
@@ -58,20 +56,28 @@
 
 (defn fast-expt [b n]
   (cond (= n 0) 1
-        (even? n) (square (fast-expt b (/ n 2)))
+        (even? n) (square (fast-expt b (quot n 2)))
         :else (* b (fast-expt b (- n 1)))))
+
 
 (t/deftest tests
   (t/is (= 292 (count-change 100)))
   (t/is (= 292 (count-change* 100)))
   (t/is (= 1 (expt 2 0)))
   (t/is (= 64 (expt 2 6)))
+  (t/is (= 512 (expt 2 9)))
   (t/is (= (+ (bit-shift-right Long/MAX_VALUE 1) 1) (expt 2 62)))
+  (t/is (= 81 (expt 3 4)))
+  (t/is (= 243 (expt 3 5)))
   (t/is (= 1 (expt* 2 0)))
   (t/is (= 64 (expt* 2 6)))
+  (t/is (= 512 (expt* 2 9)))
   (t/is (= (+ (bit-shift-right Long/MAX_VALUE 1) 1) (expt* 2 62)))
+  (t/is (= 81 (expt* 3 4)))
+  (t/is (= 243 (expt* 3 5)))
   (t/is (= 1 (fast-expt 2 0)))
   (t/is (= 64 (fast-expt 2 6)))
-  (t/is (= (+ (bit-shift-right Long/MAX_VALUE 1) 1) (fast-expt 2 62))))
-
-(t/run-tests)
+  (t/is (= 512 (fast-expt 2 9)))
+  (t/is (= (+ (bit-shift-right Long/MAX_VALUE 1) 1) (fast-expt 2 62)))
+  (t/is (= 81 (fast-expt 3 4)))
+  (t/is (= 243 (fast-expt 3 5))))

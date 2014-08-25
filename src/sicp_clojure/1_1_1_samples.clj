@@ -60,6 +60,7 @@
 (defn sqrt* [x]
   (sqrt-iter* :x x :guess 1.0))
 
+
 (t/deftest tests
   (t/is (equal-to? (+ 0.1 0.1 0.1 0.1 0.1 0.1) (* 6 0.1)) "Small number equality test.")
   (t/is (equal-to? 1.23456e38 (* 1.23456 (m/expt 10 38))) "Big number equality test.") ; doesn't work with big numbers
