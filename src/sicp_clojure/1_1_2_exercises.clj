@@ -148,13 +148,13 @@
 (defn hint [n]
   (/ (- (m/expt phi n) (m/expt psi n)) (m/sqrt 5)))
 
-(defn- fib-iter [a b counter]
-  (if (= counter 0)
-    b
-    (recur (+ a b) a (- counter 1))))
+;; (defn- fib-iter [a b counter]
+;;   (if (= counter 0)
+;;     b
+;;     (recur (+ a b) a (- counter 1))))
 
-(defn fib [n]
-  (fib-iter 1 0 n))
+;; (defn fib [n]
+;;   (fib-iter 1 0 n))
 
 
 ;;; Exercise 1.14
@@ -315,7 +315,7 @@
     0
     (fast-mult-logarithmic* a b 0)))
 
-;; The correct solution, where Theta(n) = O(log n) is:
+;; Similarly to the fast-expt-iter solution, the solution where Theta(n) = O(log n) is:
 (defn- fast-mult-logarithmic [a b acc]
   (cond
    (= b 2) (+ acc (double* a))
@@ -326,6 +326,51 @@
   (if (or (= a 0) (= b 0))
     0
     (fast-mult-logarithmic a b 0)))
+
+
+;;; Exercise 1.19
+;; There is a clever algorithm for computing the Fibonacci numbers in a logarithmic number of steps.
+;; ...
+;; Now consider T to be the special case of p = 0 and q = 1 in a family of transformations Tpq, where
+;; Tpq transforms the pair (a,b) according to a = bq + aq + ap and b = bp + aq.
+;; Show that if we apply such a transformation Tpq twice, the effect is the same as using a single
+;; transformation Tp'q' of the same form, and compute p' and q' in terms of p and q.
+;;
+;; Applying Tpq twice (keeping the ordering of the variables in the book):
+;; a1 = b0 q + a0 q + a0 p = b0 q + a0 (q + p)
+;; b1 = b0 p + a0 q
+;;
+;; a2 = (b0 p + a0 q) q + (b0 q + a0 q + a0 p) q + (b0 q + a0 q + a0 p) p
+;; b2 = (b0 p + a0 q) p + (b0 q + a0 q + a0 p) q
+;;
+;; a2 = b0 pq + a0 q² + b0 q² + a0 q² + a0 pq + b0 pq + a0 pq + a0 p²
+;; b2 = b0 p² + a0 p q + b0 q² + a0 q² + a0 pq
+;;
+;; a2 = b0 (q² + 2pq) + a0 (2q² + 2pq + p²)
+;; b2 = b0 (p² + q²) + a0 (q² + 2pq)
+;;
+;; Therefore Tp'q' = Tpq (applied twice) using the following definitions:
+;; p' = p² + q²
+;; q' = q² + 2pq
+;; and q' + p' = 2q² + 2pq + p²
+
+(defn- fib-iter [a b p q counter]
+  (cond
+   (= counter 0) b
+   (even? counter) (fib-iter a
+                             b
+                             (+ (* p p) (* q q))   ; compute p'
+                             (+ (* q q) (* 2 p q)) ; compute q'
+                             (quot counter 2))
+   :else (fib-iter (+ (* b q) (* a q) (* a p))
+                   (+ (* b p) (* a q))
+                   p
+                   q
+                   (- counter 1))))
+
+(defn fib [n]
+  (fib-iter 1 0 0 1 n))
+
 
 (t/deftest tests
   ;; (A 1 10) - substitution for relevant branches only
