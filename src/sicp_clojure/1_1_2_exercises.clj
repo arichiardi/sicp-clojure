@@ -1,5 +1,5 @@
 (ns sicp-clojure.1-1-2-exercises
-  (:require [clojure.test :as t]
+  (:require :reload-all [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt sqrt abs)]))
 
 ;;; Exercise 1.9
@@ -231,12 +231,25 @@
 ;; Design a procedure that evolves an iterative exponentiation process that uses successive
 ;; squaring and uses a logarithmic number of steps, as does fast-expt.
 
-(defn- fast-expt-logarithmic [b n a]
+;; This returns correct results but it is very inefficient as it generates a lot of additional
+;; exponentiations. This is evident using big numbers.
+(defn- fast-expt-logarithmic* [b n a]
   (cond (= n 0) a
         (even? n) (let [half-n (quot n 2)]
-                    (fast-expt-logarithmic b
+                    (fast-expt-logarithmic* b
                                            half-n
-                                           (* a (fast-expt-logarithmic b half-n 1))))
+                                           (* a (fast-expt-logarithmic* b half-n 1))))
+        :else (fast-expt-logarithmic* b (- n 1) (* a b))))
+
+(defn fast-expt-iter* [b n]
+  (if (= n 0)
+    1
+    (fast-expt-logarithmic* b n 1)))
+
+;; The correct solution where Theta(n) = O(log n) is:
+(defn- fast-expt-logarithmic [b n a]
+  (cond (= n 0) a
+        (even? n) (fast-expt-logarithmic (* b b) (quot n 2) a)
         :else (fast-expt-logarithmic b (- n 1) (* a b))))
 
 (defn fast-expt-iter [b n]
@@ -286,14 +299,27 @@
    (even? b) (fast-mult-linear a (halve b) 0)
    :else (fast-mult-linear a (halve b) a)))
 
+;; This returns correct results but it is very inefficient as it generates a lot of additional
+;; multiplications. This is evident using big numbers.
+(defn- fast-mult-logarithmic* [a b acc]
+  (cond
+   (= b 2) (+ acc (double* a))
+   (even? b) (let [half-b (halve b)]
+               (fast-mult-logarithmic* a
+                                       half-b
+                                       (+ acc (fast-mult-logarithmic* a half-b 0))))
+   :else (fast-mult-logarithmic* a (- b 1) (+ acc a))))
+
+(defn fast-mult-iter** [a b]
+  (if (or (= a 0) (= b 0))
+    0
+    (fast-mult-logarithmic* a b 0)))
+
 ;; The correct solution, where Theta(n) = O(log n) is:
 (defn- fast-mult-logarithmic [a b acc]
   (cond
    (= b 2) (+ acc (double* a))
-   (even? b) (let [half-b (halve b)]
-               (fast-mult-logarithmic a
-                                      half-b
-                                      (+ acc (fast-mult-logarithmic a half-b 0))))
+   (even? b) (fast-mult-logarithmic (double* a) (halve b) acc)
    :else (fast-mult-logarithmic a (- b 1) (+ acc a))))
 
 (defn fast-mult-iter [a b]
@@ -301,9 +327,8 @@
     0
     (fast-mult-logarithmic a b 0)))
 
-
 (t/deftest tests
-  ;; (A 1 10) - substitution for $relevant branches only
+  ;; (A 1 10) - substitution for relevant branches only
   ;; (: else (A (- 1 1) (A 1 (- 10 1)))))
   ;; (: else (A 0 (A 1 9))))
   ;;          |    |
@@ -388,12 +413,6 @@
   (t/is (= (+ (bit-shift-right Long/MAX_VALUE 1) 1) (fast-expt-iter 2 62)))
   (t/is (= 81 (fast-expt-iter 3 4)))
   (t/is (= 243 (fast-expt-iter 3 5)))
-  (t/is (= 10 (custom-mult 2 5)))
-  (t/is (= 12 (custom-mult 2 6)))
-  (t/is (= 27 (custom-mult 3 9)))
-  (t/is (= 30 (custom-mult 3 10)))
-  (t/is (= 33 (custom-mult 3 11)))
-  (t/is (= 36 (custom-mult 3 12)))
   (t/is (= 0 (fast-mult 0 5)))
   (t/is (= 0 (fast-mult 2 0)))
   (t/is (= 10 (fast-mult 2 5)))
