@@ -60,8 +60,21 @@
         :else (* b (fast-expt b (- n 1)))))
 
 
+;;; 1.2.6  Example: Testing for Primality
+(defn- divides? [a b]
+  (= (rem a b) 0))
+
+(defn- find-divisor [n test-divisor]
+  )
+
+(defn smallest-divisor [n]
+  (find-divisor n 2))
+
+
 (t/deftest tests
+  (t/is (= 4 (count-change 11)))
   (t/is (= 292 (count-change 100)))
+  (t/is (= 4 (count-change* 11)))
   (t/is (= 292 (count-change* 100)))
   (t/is (= 1 (expt 2 0)))
   (t/is (= 64 (expt 2 6)))

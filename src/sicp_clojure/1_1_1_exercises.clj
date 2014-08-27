@@ -94,29 +94,28 @@
 ;; numbers. Explain these statements, with samples showing how the test fails for small and large
 ;; numbers.
 
-;; The test with a tiny number fails because the guess is starting from a number that will
-;; not be significantly changed by the subtraction of the tiny x.
-;; As soon as the guess (squared) reaches the threshold (0.001 in the book), < will
-;; evaluated to true.
-;; Ex.: (At some point) (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001))
+;; If the input is a tiny number, the good-enough? test fails because the guess is starting from a number that will
+;; not be significantly changed by the subtraction with x itself.
+;; As soon as the guess (squared) is lower than the threshold, < will be evaluated to true.
+;; Ex.: (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001)) = true
 ; (s/sqrt 1.4e-30) ; This won't return a correct result.
 
 ;; With such a big number (almost DOUBLE_MAX) the < test will never be true because there
 ;; is no space, in the floating point representation of the number, for decimals.
 ; (s/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
 
-(defn better-good-enough? [guess prev-guess]
+(defn good-enough*? [guess prev-guess]
   (< (m/abs (- guess prev-guess)) 1.0e-30))
 
 (defn better-sqrt-iter [guess prev-guess x]
-  (if (better-good-enough? guess prev-guess)
+  (if (good-enough*? guess prev-guess)
     guess
     (better-sqrt-iter (s/improve guess x) guess x)))
 
 (defn better-sqrt [x]
   (better-sqrt-iter 1.0 0.0 x))
 
-;; The better-good-enough? function should be better for small numbers, as the iteration
+;; The good-enough*? function should be better for small numbers, as the iteration
 ;; will go on and on until the new guess cannot be improved anymore and, consequently,
 ;; (m/abs (- guess prev-guess)) will be equal to more than the tiny threshold.
 (better-sqrt 1.4e-30)
@@ -135,7 +134,7 @@
   (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
 
 (defn cube-root-iter [guess prev-guess x]
-  (if (better-good-enough? guess prev-guess)
+  (if (good-enough*? guess prev-guess)
     guess
     (cube-root-iter (cube-improve guess x) guess x)))
 
