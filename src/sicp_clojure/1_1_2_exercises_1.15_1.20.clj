@@ -1,5 +1,5 @@
 (ns sicp-clojure.1-1-2-exercises
-  (:require :reload-all [clojure.test :as t]
+  (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt sqrt abs)]))
 
 ;;; Exercise 1.15
@@ -77,10 +77,9 @@
   (quot x 2))
 
 (defn fast-mult [a b]
-  (cond
-   (or (= a 0) (= b 0)) 0
-   (even? b) (+ (double* (fast-mult a (halve b))))
-   :else (+ a (fast-mult a (- b 1)))))
+  (cond (or (= a 0) (= b 0)) 0
+        (even? b) (+ (double* (fast-mult a (halve b))))
+        :else (+ a (fast-mult a (- b 1)))))
 
 
 ;;; Exercise 1.18
@@ -95,21 +94,19 @@
     (fast-mult-linear a (- b 1) (+ acc (double* a)))))
 
 (defn fast-mult-iter* [a b]
-  (cond
-   (or (= a 0) (= b 0)) 0
-   (even? b) (fast-mult-linear a (halve b) 0)
-   :else (fast-mult-linear a (halve b) a)))
+  (cond (or (= a 0) (= b 0)) 0
+        (even? b) (fast-mult-linear a (halve b) 0)
+        :else (fast-mult-linear a (halve b) a)))
 
 ;; This returns correct results but it is very inefficient as it generates a lot of additional
 ;; multiplications. This is evident using big numbers.
 (defn- fast-mult-logarithmic* [a b acc]
-  (cond
-   (= b 2) (+ acc (double* a))
-   (even? b) (let [half-b (halve b)]
-               (fast-mult-logarithmic* a
-                                       half-b
-                                       (+ acc (fast-mult-logarithmic* a half-b 0))))
-   :else (fast-mult-logarithmic* a (- b 1) (+ acc a))))
+  (cond (= b 2) (+ acc (double* a))
+        (even? b) (let [half-b (halve b)]
+                    (fast-mult-logarithmic* a
+                                            half-b
+                                            (+ acc (fast-mult-logarithmic* a half-b 0))))
+        :else (fast-mult-logarithmic* a (- b 1) (+ acc a))))
 
 (defn fast-mult-iter** [a b]
   (if (or (= a 0) (= b 0))
@@ -118,10 +115,9 @@
 
 ;; Similarly to the fast-expt-iter solution, the solution where Theta(n) = O(log n) is:
 (defn- fast-mult-logarithmic [a b acc]
-  (cond
-   (= b 2) (+ acc (double* a))
-   (even? b) (fast-mult-logarithmic (double* a) (halve b) acc)
-   :else (fast-mult-logarithmic a (- b 1) (+ acc a))))
+  (cond (= b 2) (+ acc (double* a))
+        (even? b) (fast-mult-logarithmic (double* a) (halve b) acc)
+        :else (fast-mult-logarithmic a (- b 1) (+ acc a))))
 
 (defn fast-mult-iter [a b]
   (if (or (= a 0) (= b 0))
@@ -156,18 +152,17 @@
 ;; and q' + p' = 2q² + 2pq + p²
 
 (defn- fib-iter [a b p q counter]
-  (cond
-   (= counter 0) b
-   (even? counter) (fib-iter a
-                             b
-                             (+ (* p p) (* q q))   ; compute p'
-                             (+ (* q q) (* 2 p q)) ; compute q'
-                             (quot counter 2))
-   :else (fib-iter (+ (* b q) (* a q) (* a p))
-                   (+ (* b p) (* a q))
-                   p
-                   q
-                   (- counter 1))))
+  (cond (= counter 0) b
+        (even? counter) (fib-iter a
+                                  b
+                                  (+ (* p p) (* q q))   ; compute p'
+                                  (+ (* q q) (* 2 p q)) ; compute q'
+                                  (quot counter 2))
+        :else (fib-iter (+ (* b q) (* a q) (* a p))
+                        (+ (* b p) (* a q))
+                        p
+                        q
+                        (- counter 1))))
 
 (defn fib [n]
   (fib-iter 1 0 0 1 n))

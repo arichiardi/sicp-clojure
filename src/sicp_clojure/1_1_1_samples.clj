@@ -54,8 +54,8 @@
 (defn- sqrt-iter* [& {:keys [guess x]}]
   "Guesses the sqrt of x."
   (cond (equal-to? x (m/expt guess 2)) guess
-    (>= guess x) "Error, stack overflow foreseen."
-    :else (sqrt-iter* :x x :guess (improve* :x x :guess guess))))
+        (>= guess x) "Error, stack overflow foreseen."
+        :else (sqrt-iter* :x x :guess (improve* :x x :guess guess))))
 
 (defn sqrt* [x]
   (sqrt-iter* :x x :guess 1.0))

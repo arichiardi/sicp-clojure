@@ -7,6 +7,7 @@
 ;; Below is a sequence of expressions. What is the result printed
 ;; by the interpreter in response to each expression? Assume that the
 ;; sequence is to be evaluated in the order in which it is presented.
+
 ; See tests at the bottom.
 
 
@@ -66,9 +67,8 @@
 
 ;;; Exercise 1.6
 (defn new-if [predicate then-clause else-clause]
-  (cond
-   (do predicate) then-clause
-   :else else-clause))
+  (cond (do predicate) then-clause
+        :else else-clause))
 
 (defn sqrt-iter-alyssa [guess x]
   (new-if (s/good-enough? guess x)

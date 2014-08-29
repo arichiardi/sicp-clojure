@@ -1,5 +1,5 @@
 (ns sicp-clojure.1-1-2-exercises
-  (:require :reload-all [clojure.test :as t]
+  (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt sqrt abs)]))
 
 ;;; Exercise 1.9
