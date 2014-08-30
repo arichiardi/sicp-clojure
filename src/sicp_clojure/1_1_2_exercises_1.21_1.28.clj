@@ -180,10 +180,10 @@
 
 (defn- f-helper [n a]
   (cond (= n a) true
-        (= (s/expmod a n n) (rem a n)) (f-helper n (inc a))
+        (= (s/expmod a n n) a) (f-helper n (inc a))
         :else false))
 
-(defn fermat-test* [n]
+(defn fermat-test-check [n]
   (f-helper n 2))
 
 
@@ -191,7 +191,7 @@
 ;; Modify the expmod procedure to signal if it discovers a nontrivial square root of 1, and use
 ;; this to implement the Miller-Rabin test with a procedure analogous to fermat-test.
 
-(defn- expmod-mr [base exp m]
+(defn- xpmod-mr [base exp m]
   (cond (= exp 0) 1
         (even? exp) (let [a (expmod-mr base (quot exp 2) m)
                           square-modulo (rem (s/square a) m)]
@@ -201,8 +201,9 @@
         :else (rem (*' base (expmod-mr base (- exp 1) m)) m)))
 
 (defn miller-rabin-test [n]
-  (let [try-it (fn [a n] (= (expmod-mr a (- n 1) n) 1))]
-    (try-it (+ 1 (m/round (rand (- n 1)))) n)))
+  (defn try-it [a n]
+    (= (expmod-mr a (- n 1) n) 1))
+  (try-it (+ 1 (m/round (m/floor (rand (- n 1))))) n))
 
 (defn fast-prime*? [n times]
   (cond (= times 0) true
@@ -210,18 +211,20 @@
         :else false))
 
 
+;; Note that some of the tests below are probabilistic and they can produce a different
+;; results (although with very low probability).
 (t/deftest tests
   (t/is (= 199 (s/smallest-divisor 199)))
   (t/is (= 1999 (s/smallest-divisor 1999)))
   (t/is (= 7 (s/smallest-divisor 19999)))
-  (t/is (= true (fermat-test* 31)))
-  (t/is (= false (fermat-test* 32)))
-  (t/is (= true (fermat-test* 561))) ; Charmichael number
-  (t/is (= true (fermat-test* 1105))) ; Charmichael number
-  (t/is (= true (fermat-test* 1729))) ; Charmichael number
-  (t/is (= true (fermat-test* 2465))) ; Charmichael number
-  (t/is (= true (fermat-test* 2821))) ; Charmichael number
-  (t/is (= true (fermat-test* 6601))) ; Charmichael number
+  (t/is (= true (fermat-test-check 31)))
+  (t/is (= false (fermat-test-check 32)))
+  (t/is (= true (fermat-test-check 561))) ; Charmichael number
+  (t/is (= true (fermat-test-check 1105))) ; Charmichael number
+  (t/is (= true (fermat-test-check 1729))) ; Charmichael number
+  (t/is (= true (fermat-test-check 2465))) ; Charmichael number
+  (t/is (= true (fermat-test-check 2821))) ; Charmichael number
+  (t/is (= true (fermat-test-check 6601))) ; Charmichael number
   (t/is (= true (fast-prime*? 31 50)))
   (t/is (= false (fast-prime*? 32 50)))
   (t/is (= false (fast-prime*? 561 50))) ; Charmichael number
