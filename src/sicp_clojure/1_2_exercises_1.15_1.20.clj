@@ -1,4 +1,4 @@
-(ns sicp-clojure.1-1-2-exercises
+(ns sicp-clojure.1-2-exercises
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt sqrt abs)]))
 
@@ -36,10 +36,9 @@
 ;; exponentiations. This is evident using big numbers.
 (defn- fast-expt-logarithmic* [b n a]
   (cond (= n 0) a
-        (even? n) (let [half-n (quot n 2)]
-                    (fast-expt-logarithmic* b
-                                           half-n
-                                           (* a (fast-expt-logarithmic* b half-n 1))))
+        (even? n) (fast-expt-logarithmic* b
+                                          (quot n 2)
+                                          (* a (fast-expt-logarithmic* b (quot n 2) 1)))
         :else (fast-expt-logarithmic* b (- n 1) (* a b))))
 
 (defn fast-expt-iter* [b n]
@@ -102,10 +101,9 @@
 ;; multiplications. This is evident using big numbers.
 (defn- fast-mult-logarithmic* [a b acc]
   (cond (= b 2) (+ acc (double* a))
-        (even? b) (let [half-b (halve b)]
-                    (fast-mult-logarithmic* a
-                                            half-b
-                                            (+ acc (fast-mult-logarithmic* a half-b 0))))
+        (even? b) (fast-mult-logarithmic* a
+                                          (halve b)
+                                          (+ acc (fast-mult-logarithmic* a (halve b) 0)))
         :else (fast-mult-logarithmic* a (- b 1) (+ acc a))))
 
 (defn fast-mult-iter** [a b]
@@ -220,6 +218,7 @@
 ;; 2
 ;;
 ;; Total of 4 (rem a b) operations evaluated.
+
 
 (t/deftest tests
   (t/is (= 1 (fast-expt-iter 2 0)))

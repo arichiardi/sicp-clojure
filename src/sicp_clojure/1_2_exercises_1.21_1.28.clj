@@ -1,9 +1,8 @@
-(ns sicp-clojure.1-1-2-exercises
+(ns sicp-clojure.1-2-exercises
   (:require :reload-all [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (round)]
-            [clojure.tools.trace :as tr]
             [sicp-clojure.utils :as u]
-            [sicp-clojure.1-1-2-samples :as s]))
+            [sicp-clojure.1-2-samples :as s]))
 
 ;;; Exercise 1.21
 ;; Use the smallest-divisor procedure to find the smallest divisor of each of the following numbers:
@@ -126,8 +125,8 @@
 ;(u/microbench 100 (prime*? 1000037)) ;
 
 ;; The difference in average time between prime? and prime*? (using next*) is not exactly 2.
-;; This can be explained noticing that next* introduces branching with an if that can have
-;; some performance hit.
+;; This can be explained noticing that next* introduces branching (if) that can have some
+;; performance hit.
 
 
 ;;; Exercise 1.24
@@ -178,9 +177,10 @@
 ;;; Exercise 1.27
 ;; Demonstrate that the Carmichael numbers listed in footnote 47 really do fool the Fermat test.
 
+;; In order to avoid stack overflows we need to use Clojure's optimized recur construct.
 (defn- f-helper [n a]
   (cond (= n a) true
-        (= (s/expmod a n n) a) (f-helper n (inc a))
+        (= (s/expmod a n n) a) (recur n (inc a))
         :else false))
 
 (defn fermat-test-check [n]
@@ -190,14 +190,15 @@
 ;;; Exercise 1.28
 ;; Modify the expmod procedure to signal if it discovers a nontrivial square root of 1, and use
 ;; this to implement the Miller-Rabin test with a procedure analogous to fermat-test.
+(defn- check-and-square [a m]
+  (def square-modulo (rem (s/square a) m))
+  (if (or (= a 1) (= a (- m 1)) (not (= square-modulo 1)))
+    square-modulo
+    0))
 
-(defn- xpmod-mr [base exp m]
+(defn- expmod-mr [base exp m]
   (cond (= exp 0) 1
-        (even? exp) (let [a (expmod-mr base (quot exp 2) m)
-                          square-modulo (rem (s/square a) m)]
-                      (if (or (= a 1) (= a (- m 1)) (not (= square-modulo 1)))
-                        square-modulo
-                        0))
+        (even? exp) (check-and-square (expmod-mr base (quot exp 2) m) m)
         :else (rem (*' base (expmod-mr base (- exp 1) m)) m)))
 
 (defn miller-rabin-test [n]

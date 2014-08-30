@@ -1,4 +1,4 @@
-(ns sicp-clojure.1-1-2-samples
+(ns sicp-clojure.1-2-samples
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (round)]
             [clojure.tools.trace :as tr]))
@@ -104,7 +104,7 @@
 (defn- fermat-test [n]
   (defn try-it [a n]
     (= (expmod a n n) a))
-  (try-it (+ 1 (m/round (m/floor (rand (- n 1)))) n)))
+  (try-it (+ 1 (m/round (m/floor (rand (- n 1))))) n))
 
 (defn fast-prime? [n times]
   (cond (= times 0) true
@@ -139,4 +139,3 @@
   (t/is (= false (prime? 27)))
   (t/is (= true (fast-prime? 29 5)))
   (t/is (= false (fast-prime? 27 5))))
-

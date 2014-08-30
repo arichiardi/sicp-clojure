@@ -1,4 +1,4 @@
-(ns sicp-clojure.1-1-1-samples
+(ns sicp-clojure.1-1-samples
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt abs)]))
 

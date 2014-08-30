@@ -1,7 +1,7 @@
-(ns sicp-clojure.1-1-1-exercises
+(ns sicp-clojure.1-1-exercises
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt)]
-            [sicp-clojure.1-1-1-samples :as s]))
+            [sicp-clojure.1-1-samples :as s]))
 
 ;;; Exercise 1.1
 ;; Below is a sequence of expressions. What is the result printed
@@ -13,26 +13,38 @@
 
 ;;; Exercise 1.2
 ;; Translate the following expression into prefix form.
+
 (defn prefix-expr []
   (/ (+ 5 4 (- 2 (- 3 (+ 6 4/5))))
      (* 3 (- 6 2) (- 2 7))))
 
 
 ;;; Exercise 1.3
-;; Define a procedure that takes three numbers as arguments
-;; and returns the sum of the squares of the two larger numbers.
-;; Have a look at the excellent answer to my doubt on stackoverflow:
-;; http://stackoverflow.com/questions/25096585/let-binding-sequence-as-input-to-map-exception-thrown/
+;; Define a procedure that takes three numbers as arguments and returns the sum of the squares
+;; of the two larger numbers.
+
 (defn square-sum-largest-pair [a b c]
+  (if (> a b)
+    (if (> b c) (+ (* a a) (* b b))
+      (+ (* a a) (* c c)))
+    (if (> a c) (+ (* b b) (* a a))
+      (+ (* b b) (* c c)))))
+
+;; Have a look at the excellent answer to my doubt on stackoverflow for a solution using more
+;; advanced constructs:
+;; http://stackoverflow.com/questions/25096585/let-binding-sequence-as-input-to-map-exception-thrown/
+
+(defn square-sum-largest-pair* [a b c]
   "Sums the square of the largest two number of the three in input."
   (let [[fst snd] (sort > [a b c])]
-        (+ (m/expt fst 2) (m/expt snd 2))))
+        (+ (* fst fst) (* snd snd))))
 
 
 ;;; Exercise 1.4
 ;; Observe that our model of evaluation allows for combinations whose
 ;; operators are compound expressions. Use this observation to describe
 ;; the behavior of the following procedure.
+
 (defn a-plus-abs-b [a b]
   ((if (> b 0) + -) a b))
 
@@ -42,6 +54,7 @@
 
 
 ;;; Exercise 1.5
+
 (defn p [] (p))
 
 (defn ben-bitdiddle-test [x y]
@@ -66,6 +79,7 @@
 
 
 ;;; Exercise 1.6
+
 (defn new-if [predicate then-clause else-clause]
   (cond (do predicate) then-clause
         :else else-clause))
@@ -143,27 +157,27 @@
 
 
 (t/deftest tests
-  (t/is (= 10 10) "1.1\\) Checking results.")
-  (t/is (= 12 (+ 5 3 4)) "1.1\\) Checking results.")
-  (t/is (= 8 (- 9 1)) "1.1\\) Checking results.")
-  (t/is (= 3 (/ 6 2)) "1.1\\) Checking results.")
-  (t/is (= 6 (+ (* 2 4) (- 4 6))) "1.1\\) Checking results.")
+  (t/is (= 10 10))
+  (t/is (= 12 (+ 5 3 4)))
+  (t/is (= 8 (- 9 1)))
+  (t/is (= 3 (/ 6 2)))
+  (t/is (= 6 (+ (* 2 4) (- 4 6))))
   (def a 3)
   (def b (+ a 1))
-  (t/is (= 19 (+ a b (* a b))) "1.1\\) Checking results.")
-  (t/is (= false (= a b)) "1.1\\) Checking results.")
+  (t/is (= 19 (+ a b (* a b))))
+  (t/is (= false (= a b)))
   (t/is (= 4 (if (and (> b a) (< b (* a b)))
                b
-               a)) "1.1\\) Checking results.")
+               a)))
   (t/is (= 16 (cond
                (= a 4) 6
                (= b 4) (+ 6 7 a)
-               true 25)) "1.1\\) Checking results.")
+               true 25)))
   (t/is (= 6 (+ 2 (if (> b a) b a))))
   (t/is (= 16 (* (cond (> a b) a
                        (< a b) b
                        true -1)
-                 (+ a 1))) "1.1\\) Checking results.")
+                 (+ a 1))))
   (t/is (= (prefix-expr) -37/150) "1.2\\) Should result in -37/150")
   (t/is (= (square-sum-largest-pair 1 4 5) 41) "1.3\\) Should correctly sum 1 4 5.")
   (t/is (= (square-sum-largest-pair 5 4 1) 41) "1.3\\) Should correctly sum 5 4 1.")
@@ -171,6 +185,12 @@
   (t/is (= (square-sum-largest-pair 1 5 4) 41) "1.3\\) Should correctly sum 1 5 4.")
   (t/is (= (square-sum-largest-pair 4 1 5) 41) "1.3\\) Should correctly sum 4 1 5.")
   (t/is (= (square-sum-largest-pair 5 1 4) 41) "1.3\\) Should correctly sum 5 1 4.")
+  (t/is (= (square-sum-largest-pair* 1 4 5) 41) "1.3\\) Should correctly sum 1 4 5. *")
+  (t/is (= (square-sum-largest-pair* 5 4 1) 41) "1.3\\) Should correctly sum 5 4 1. *")
+  (t/is (= (square-sum-largest-pair* 4 5 1) 41) "1.3\\) Should correctly sum 4 5 1. *")
+  (t/is (= (square-sum-largest-pair* 1 5 4) 41) "1.3\\) Should correctly sum 1 5 4. *")
+  (t/is (= (square-sum-largest-pair* 4 1 5) 41) "1.3\\) Should correctly sum 4 1 5. *")
+  (t/is (= (square-sum-largest-pair* 5 1 4) 41) "1.3\\) Should correctly sum 5 1 4. *")
   (t/is (= 42 (a-plus-abs-b 40 -2)) "1.4\\) The answer is always 42.")
   (t/is (= 42 (a-plus-abs-b 40 2)) "1.4\\) The answer is always 42.")
   (t/is (= 5 (new-if (= 2 3) 0 5)) "1.6 \\) Alyssa test should be 5.")
