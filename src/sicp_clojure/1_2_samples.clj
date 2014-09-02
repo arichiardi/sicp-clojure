@@ -1,7 +1,6 @@
 (ns sicp-clojure.1-2-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (round)]
-            [clojure.tools.trace :as tr]))
+            [clojure.math.numeric-tower :as m :refer (round)]))
 
 ;;; 1.2.2 Example: Counting change
 
@@ -22,7 +21,7 @@
 (defn count-change [amount]
   (cc amount 5))
 
-; (count-change 11) ; uncomment to evaluate
+;; (count-change 11) ; uncomment to evaluate
 
 ;; Implementation using a list for the denominations.
 (def denomination-kind [1 5 10 25 50])

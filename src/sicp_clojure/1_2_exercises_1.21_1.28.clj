@@ -1,5 +1,5 @@
 (ns sicp-clojure.1-2-exercises
-  (:require :reload-all [clojure.test :as t]
+  (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (round)]
             [sicp-clojure.utils :as u]
             [sicp-clojure.1-2-samples :as s]))
@@ -42,16 +42,16 @@
         :else (do (timed-prime-test start)
                 (search-for-primes (+ start 2) end))))
 
-;(search-first-n-primes-in-range 15 9999 3)
-;(search-first-n-primes-in-range 10000 99999 3)
-;(search-first-n-primes-in-range 100000 999999 3)
-;(search-first-n-primes-in-range 1000000 9999999 3)
-;(search-first-n-primes-in-range 10000000 99999999 3)
+;;(search-first-n-primes-in-range 15 9999 3)
+;;(search-first-n-primes-in-range 10000 99999 3)
+;;(search-first-n-primes-in-range 100000 999999 3)
+;;(search-first-n-primes-in-range 1000000 9999999 3)
+;;(search-first-n-primes-in-range 10000000 99999999 3)
 
-;(search-for-primes 1008 1020) ; => ~ 2800
-;(search-for-primes 10006 10038) ; => ~ 8500
-;(search-for-primes 100002 100044) ; => ~ 17000
-;(search-for-primes 1000002 1000038) ; => ~ 55000
+;;(search-for-primes 1008 1020) ; => ~ 2800
+;;(search-for-primes 10006 10038) ; => ~ 8500
+;;(search-for-primes 100002 100044) ; => ~ 17000
+;;(search-for-primes 1000002 1000038) ; => ~ 55000
 
 ;; Even if the recursion causes stack overflow most of the times, the average timing (notice that
 ;; the time unit is nanoseconds) of each search kind of shows an increase of around (sqrt 10),
@@ -59,18 +59,18 @@
 ;; In any case, these kind of micro benchmarks are really difficult on the JVM in general,
 ;; see https://code.google.com/p/caliper/wiki/JavaMicrobenchmarks.
 
-;(u/microbench 100 (prime? 1009)) ; Average: 0.014561444444444441
-;(u/microbench 100 (prime? 1013)) ;
-;(u/microbench 100 (prime? 1019)) ;
-;(u/microbench 100 (prime? 10007)) ;
-;(u/microbench 100 (prime? 10009)) ;
-;(u/microbench 100 (prime? 10037)) ; Average: 0.015071555555555553
-;(u/microbench 100 (prime? 100003)) ;
-;(u/microbench 100 (prime? 100019)) ;
-;(u/microbench 100 (prime? 100043)) ; Average: 0.032170000000000004
-;(u/microbench 100 (prime? 1000003)) ;
-;(u/microbench 100 (prime? 1000033)) ; Average: 0.07697216666666665
-;(u/microbench 100 (prime? 1000037)) ;
+;;(u/microbench 100 (prime? 1009)) ; Average: 0.014561444444444441
+;;(u/microbench 100 (prime? 1013)) ;
+;;(u/microbench 100 (prime? 1019)) ;
+;;(u/microbench 100 (prime? 10007)) ;
+;;(u/microbench 100 (prime? 10009)) ;
+;;(u/microbench 100 (prime? 10037)) ; Average: 0.015071555555555553
+;;(u/microbench 100 (prime? 100003)) ;
+;;(u/microbench 100 (prime? 100019)) ;
+;;(u/microbench 100 (prime? 100043)) ; Average: 0.032170000000000004
+;;(u/microbench 100 (prime? 1000003)) ;
+;;(u/microbench 100 (prime? 1000033)) ; Average: 0.07697216666666665
+;;(u/microbench 100 (prime? 1000037)) ;
 
 ;; Trying with another micro benchmark tool changes a little bit the result. The average time doesn't
 ;; really show a (sqrt 10) increase from one step to another.
@@ -106,23 +106,23 @@
         :else (do (timed-prime-test* start)
                 (search-for-primes* (+ start 2) end))))
 
-;(search-for-primes* 1008 1020) ; => ~ 2800
-;(search-for-primes* 10006 10038) ; => ~ 8500
-;(search-for-primes* 100002 100044) ; => ~ 17000
-;(search-for-primes* 1000002 1000038) ; => ~ 55000
+;;(search-for-primes* 1008 1020) ; => ~ 2800
+;;(search-for-primes* 10006 10038) ; => ~ 8500
+;;(search-for-primes* 100002 100044) ; => ~ 17000
+;;(search-for-primes* 1000002 1000038) ; => ~ 55000
 
-;(u/microbench 100 (prime*? 1009)) ; Average: 0.0106535
-;(u/microbench 100 (prime*? 1013)) ;
-;(u/microbench 100 (prime*? 1019)) ;
-;(u/microbench 100 (prime*? 10007)) ;
-;(u/microbench 100 (prime*? 10009)) ;
-;(u/microbench 100 (prime*? 10037)) ; Average: 0.012052333333333335
-;(u/microbench 100 (prime*? 100003)) ;
-;(u/microbench 100 (prime*? 100019)) ;
-;(u/microbench 100 (prime*? 100043)) ; Average: 0.02210261111111111
-;(u/microbench 100 (prime*? 1000003)) ;
-;(u/microbench 100 (prime*? 1000033)) ; Average: 0.05496777777777779
-;(u/microbench 100 (prime*? 1000037)) ;
+;;(u/microbench 100 (prime*? 1009)) ; Average: 0.0106535
+;;(u/microbench 100 (prime*? 1013)) ;
+;;(u/microbench 100 (prime*? 1019)) ;
+;;(u/microbench 100 (prime*? 10007)) ;
+;;(u/microbench 100 (prime*? 10009)) ;
+;;(u/microbench 100 (prime*? 10037)) ; Average: 0.012052333333333335
+;;(u/microbench 100 (prime*? 100003)) ;
+;;(u/microbench 100 (prime*? 100019)) ;
+;;(u/microbench 100 (prime*? 100043)) ; Average: 0.02210261111111111
+;;(u/microbench 100 (prime*? 1000003)) ;
+;;(u/microbench 100 (prime*? 1000033)) ; Average: 0.05496777777777779
+;;(u/microbench 100 (prime*? 1000037)) ;
 
 ;; The difference in average time between prime? and prime*? (using next*) is not exactly 2.
 ;; This can be explained noticing that next* introduces branching (if) that can have some
@@ -145,10 +145,10 @@
         :else (do (timed-prime-test** start)
                 (search-for-primes** (+ start 2) end))))
 
-;(search-for-primes** 1008 1020)
-;(search-for-primes** 10006 10038)
-;(search-for-primes** 100002 100044)
-;(search-for-primes** 1000002 1000038)
+;;(search-for-primes** 1008 1020)
+;;(search-for-primes** 10006 10038)
+;;(search-for-primes** 100002 100044)
+;;(search-for-primes** 1000002 1000038)
 
 ;; There is no noticeable difference in the benchmarks of fast-prime?, even using some more powerful
 ;; tools. The numbers are probably too small or some JVM hocus-pocus is acting weird behind the scene.

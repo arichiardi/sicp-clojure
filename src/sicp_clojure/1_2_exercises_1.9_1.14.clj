@@ -130,7 +130,7 @@
   "Prints the Pascal's triangles from top to the input number of rows."
   (double-loop (- rows 1) 0))
 
-;; (draw-pascal 5) ; uncomment to draw the Pascal's triangle.
+;; (draw-pascal 5) ; Uncomment to draw the Pascal's triangle.
 
 
 ;;; Exercise 1.13

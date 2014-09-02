@@ -75,7 +75,7 @@
 ;; (if (= 0 0) 0 (p)) ; as per the special form if, the predicate is evaluted first.
 ;; (0)
 
-; (ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow
+;; (ben-bitdiddle-test 0 (p)) ; Uncommenting this will cause a stack overflow
 
 
 ;;; Exercise 1.6
@@ -98,7 +98,7 @@
 ;; As a consequence, in this case the else-clause, which is a recursive call to sqrt-iter-alyssa,
 ;; gets evaluated with always the same parameters and will therefore produce a stack overflow.
 
-; (sqrt-alyssa 2) ; Uncommenting this will cause a stack overflow
+;; (sqrt-alyssa 2) ; Uncommenting this will cause a stack overflow
 
 
 ;;; Exercise 1.7
@@ -112,11 +112,13 @@
 ;; not be significantly changed by the subtraction with x itself.
 ;; As soon as the guess (squared) is lower than the threshold, < will be evaluated to true.
 ;; Ex.: (< (abs (- (m/expt 0.03125 2) 1.40e-30)) 0.001)) = true
-; (s/sqrt 1.4e-30) ; This won't return a correct result.
+
+;; (s/sqrt 1.4e-30) ; This won't return a correct result.
 
 ;; With such a big number (almost DOUBLE_MAX) the < test will never be true because there
 ;; is no space, in the floating point representation of the number, for decimals.
-; (s/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
+
+;; (s/sqrt 1.79e+308) ; Uncommenting this will cause a stack overflow
 
 (defn good-enough*? [guess prev-guess]
   (< (m/abs (- guess prev-guess)) 1.0e-30))
