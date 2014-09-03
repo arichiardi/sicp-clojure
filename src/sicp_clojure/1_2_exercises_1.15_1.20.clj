@@ -69,11 +69,9 @@
 ;; divides an (even) integer by 2. Using these, design a multiplication procedure analogous
 ;; to fast-expt that uses a logarithmic number of steps.
 
-(defn- double* [x]
-  (* x 2))
+(defn- double* [x] (* x 2))
 
-(defn- halve [x]
-  (quot x 2))
+(defn- halve [x] (quot x 2))
 
 (defn fast-mult [a b]
   (cond (or (= a 0) (= b 0)) 0
@@ -86,10 +84,10 @@
 ;; an iterative process for multiplying two integers in terms of adding, doubling,
 ;; and halving and uses a logarithmic number of steps.
 
-;; The following solution is iterative but grows linearly with the input.
+;; Attempt #1. The following solution is iterative but grows linearly with the input and it's very
+;; inefficient.
 (defn- fast-mult-linear [a b acc]
-  (if
-    (= b 0) acc
+  (if (= b 0) acc
     (fast-mult-linear a (- b 1) (+ acc (double* a)))))
 
 (defn fast-mult-iter* [a b]
@@ -97,7 +95,7 @@
         (even? b) (fast-mult-linear a (halve b) 0)
         :else (fast-mult-linear a (halve b) a)))
 
-;; This returns correct results but it is very inefficient as it generates a lot of additional
+;; Attempt #2. This returns correct results but it is very inefficient as it generates a lot of additional
 ;; multiplications. This is evident using big numbers.
 (defn- fast-mult-logarithmic* [a b acc]
   (cond (= b 2) (+ acc (double* a))

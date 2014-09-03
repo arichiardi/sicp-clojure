@@ -1,6 +1,7 @@
 (ns sicp-clojure.1-3-exercises
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt sqrt abs gcd)]
+            [sicp-clojure.utils :as u]
             [sicp-clojure.1-3-samples :as s]))
 
 ;;; Exercise 1.29
@@ -174,23 +175,23 @@
 
 
 (t/deftest tests
-  (t/is (s/good-enough? 0.25 (simpson-integral s/cube 0 1 100)))
-  (t/is (s/good-enough? 0.25 (simpson-integral s/cube 0 1 1000)))
+  (t/is (u/equal-to? 0.25 (simpson-integral s/cube 0 1 100)))
+  (t/is (u/equal-to? 0.25 (simpson-integral s/cube 0 1 1000)))
   (t/is (= 4 (triangular-sum 1 2)))
   (t/is (= 56 (triangular-sum 1 6)))
   (t/is (= 1 (factorial 0)))
   (t/is (= 1 (factorial 1)))
   (t/is (= 2 (factorial 2)))
   (t/is (= 120 (factorial 5)))
-  (t/is (s/good-enough? Math/PI (pi-approx 1000)))
+  (t/is (u/equal-to? Math/PI (pi-approx 1000)))
   (t/is (= 1 (factorial-iter 0)))
   (t/is (= 1 (factorial-iter 1)))
   (t/is (= 2 (factorial-iter 2)))
   (t/is (= 120 (factorial-iter 5)))
-  (t/is (s/good-enough? 0.707106781 (geometric-sum 1/2 1/2 50)))
-  (t/is (s/good-enough? 1 (sine-product (/ Math/PI 2) 100)))
-  (t/is (s/good-enough? 1 (sine-product (/ Math/PI 2) 1000)))
-  (t/is (s/good-enough? 0.707106781 (sine-product* (/ Math/PI 4) 1000)))
+  (t/is (u/equal-to? 0.707106781 (geometric-sum 1/2 1/2 50)))
+  (t/is (u/equal-to? 1 (sine-product (/ Math/PI 2) 100)))
+  (t/is (u/equal-to? 1 (sine-product (/ Math/PI 2) 1000)))
+  (t/is (u/equal-to? 0.707106781 (sine-product* (/ Math/PI 4) 1000)))
   (t/is (= 87 (sum-of-squares-of-primes 1 10)))
   (t/is (= 105 (product-of-positives-prime-to-n 8)))
   (t/is (= 4 (f #(* %1 %1))))

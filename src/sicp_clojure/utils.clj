@@ -1,6 +1,7 @@
 (ns sicp-clojure.utils
   (:require [clojure.test :as t]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.math.numeric-tower :as m :refer (round floor expt abs)]))
 
 
 (defn make-file-from-resource [name] (io/file (io/resource name)))
@@ -56,5 +57,44 @@
      timings#))
 
 
+(defn round-to-p-decimals [x p]
+  "Rounds a number x to a precision of p significant digits."
+  (/ (m/round (* (double x) (m/expt 10 p))) (double (m/expt 10 p))))
+
+
+(defn- equality-comparison-fn [epsilon]
+  "Returns a function for evaluating the equality of its two arguments.
+  The equality check is a simple comparison between their difference and the input epsilon.
+  With this implementation, the comparison fn doesn't work with big numbers."
+  (fn [x y]
+    (< (m/abs (- x y)) epsilon)))
+
+
+(defn- equality-comparison-with-scale-fn [epsilon]
+  "Returns a function for evaluating the equality of its two arguments.
+  The equality check is a simple comparison between their difference and the epsilon
+  is used for comparing them."
+  (fn [x y]
+    (let [scale (if (and (not (zero? x)) (not (zero? y))) (m/abs x) 1)]
+      (< (m/abs (- x y)) (* scale epsilon)))))
+
+
+(def equal-to?
+  "Comparing two numbers using equality-with-difference-fn with epsilon = 0.0001."
+  (equality-comparison-with-scale-fn 0.001))
+
+
+(defn average
+  "Calculates the average of two or more numbers."
+  ([] 0)
+  ([xs] (/ (reduce + xs) (double (count xs)))))
+
+
 (t/deftest tests
-  (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value")))))
+  (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))
+  (t/is (= 1.342 (round-to-p-decimals 1.3415 3)))
+  (t/is (= 1.341 (round-to-p-decimals 1.3412 3)))
+  (t/is (= 0.0 (round-to-p-decimals 0 1)))
+  (t/is (equal-to? 2.5 (average [3 2])) "Average of [3 2]")
+  (t/is (equal-to? 2 (average [3 2 1])) "Average of [3 2 1]")
+  (t/is (equal-to? 6.1 (average [3.7 4.1 9.3 12.4 1])) "Average of [3.7 4.1 9.3 12.4 1]"))

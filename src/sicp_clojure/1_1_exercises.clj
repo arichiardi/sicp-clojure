@@ -1,6 +1,7 @@
 (ns sicp-clojure.1-1-exercises
   (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (expt)]
+            [sicp-clojure.utils :as u]
             [sicp-clojure.1-1-samples :as s]))
 
 ;;; Exercise 1.1
@@ -197,7 +198,7 @@
   (t/is (= 42 (a-plus-abs-b 40 2)) "1.4\\) The answer is always 42.")
   (t/is (= 5 (new-if (= 2 3) 0 5)) "1.6 \\) Alyssa test should be 5.")
   (t/is (= 0 (new-if (= 1 1) 0 5)) "1.6 \\) Alyssa test should be 0.")
-  (t/is (s/equal-to? 3 (cube-root 27)) "1.8 \\) Cube root of 27.")
-  (t/is (s/equal-to? 4.32674871092222 (cube-root 81)) "1.8 \\) Cube root of 81.")
-  (t/is (s/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)) "1.8 \\) Cube root of a small number.")
-  (t/is (s/equal-to? 5.539658256754465E102 (cube-root 1.7e+308)) "1.8 \\) Cube root of a big number."))
+  (t/is (u/equal-to? 3 (cube-root 27)) "1.8 \\) Cube root of 27.")
+  (t/is (u/equal-to? 4.32674871092222 (cube-root 81)) "1.8 \\) Cube root of 81.")
+  (t/is (u/equal-to? 1.1186889420813968E-10 (cube-root 1.4e-30)) "1.8 \\) Cube root of a small number.")
+  (t/is (u/equal-to? 5.539658256754465E102 (cube-root 1.7e+308)) "1.8 \\) Cube root of a big number."))

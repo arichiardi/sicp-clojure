@@ -1,6 +1,7 @@
 (ns sicp-clojure.1-3-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (sqrt abs)]))
+            [clojure.math.numeric-tower :as m :refer (sqrt abs)]
+            [sicp-clojure.utils :as u]))
 
 ;;; 1.3.1  Procedures as Arguments
 
@@ -49,13 +50,13 @@
 
 ;;; 1.3.3  Procedures as General Methods
 ;; Finding roots of equations by the half-interval method
-(defn close-enough? [x y] (< (m/abs (- x y)) 0.001))
+(defn- close-enough? [x y] (< (m/abs (- x y)) 0.001))
 
 (defn- sin [x] (Math/sin x))
 
 (defn- cos [x] (Math/cos x))
 
-(defn search [f neg-point pos-point]
+(defn- search [f neg-point pos-point]
   (let [midpoint (/ (+ neg-point pos-point) 2.0)]
     (if (close-enough? neg-point pos-point)
       midpoint
@@ -71,7 +72,7 @@
           (and (neg? b-value) (pos? a-value)) (search f b a)
           :else (throw (RuntimeException. (str "Values " a " & " b " are not of opposite sign."))))))
 
-(def tolerance 0.00001)
+(def ^:private tolerance 0.00001)
 
 (defn fixed-point [f first-guess]
   (defn close-enough? [v1 v2]
@@ -93,20 +94,19 @@
   (fixed-point (fn [y] (/ (+ y (/ x y)) 2)) 1.0))
 
 
-(t/run-tests)
 (t/deftest tests
   (t/is (= 3025 (sum-cubes 1 10)))
   (t/is (= 55 (sum-integers 1 10)))
-  (t/is (close-enough? Math/PI (* 8 (pi-sum 1 1000)))) ; doesn't return a result < 0.001 from PI
+  (t/is (u/equal-to? Math/PI (* 8 (pi-sum 1 1000)))) ; doesn't return a result < 0.001 from PI
   (t/is (= (sum-cubes 1 10) (sum-cubes* 1 10)))
   (t/is (= (sum-integers 1 10) (sum-integers* 1 10)))
   (t/is (= (pi-sum 1 1000) (pi-sum* 1 1000)))
-  (t/is (close-enough? 0.25 (integral cube 0 1 0.01)))
-  (t/is (close-enough? 0.25 (integral cube 0 1 0.001)))
-  (t/is (close-enough? Math/PI (half-interval-method sin 2.0 4.0)))
-  (t/is (close-enough? 1.89306640625 (half-interval-method (fn [x] (- (* x x x) (* 2 x) 3))
+  (t/is (u/equal-to? 0.25 (integral cube 0 1 0.01)))
+  (t/is (u/equal-to? 0.25 (integral cube 0 1 0.001)))
+  (t/is (u/equal-to? Math/PI (half-interval-method sin 2.0 4.0)))
+  (t/is (u/equal-to? 1.89306640625 (half-interval-method (fn [x] (- (* x x x) (* 2 x) 3))
                                              1.0
                                              2.0)))
-  (t/is (close-enough? 0.7390822985224023 (fixed-point cos 1.0)))
-  (t/is (close-enough? 1.2587315962971173 (fixed-point (fn [x] (+ (sin x) (cos x))) 1.0)))
-  (t/is (close-enough? (m/sqrt 2) (sqrt* 2))))
+  (t/is (u/equal-to? 0.7390822985224023 (fixed-point cos 1.0)))
+  (t/is (u/equal-to? 1.2587315962971173 (fixed-point (fn [x] (+ (sin x) (cos x))) 1.0)))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt* 2))))
