@@ -72,6 +72,7 @@
                 1.0))
   (+ 2 (cont-frac* n d k)))
 
+
 ;;; Exercise 1.39
 ;; Define a procedure (tan-cf x k) that computes an approximation to the tangent function based
 ;; on Lambert's formula. K specifies the number of terms to compute, as in exercise 1.37.
@@ -88,7 +89,7 @@
   (defn d [i] (- (* 2 i) 1))
   (cont-frac* n d k))
 
-(t/run-tests)
+
 (t/deftest tests
   (t/is (u/equal-to? 1.6180339887498948482 (golden-ratio)))
   (t/is (u/equal-to? 4.555532257016376 (x-to-x-eq-one-thousand)))
