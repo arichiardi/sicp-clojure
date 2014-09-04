@@ -78,14 +78,12 @@
 ;; on Lambert's formula. K specifies the number of terms to compute, as in exercise 1.37.
 
 (defn tan-cf [x k]
-  (defn n [i] (if (= i 1) x
-                       (- (*' x x))))
+  (defn n [i] (if (= i 1) x (- (u/square x))))
   (defn d [i] (- (* 2 i) 1))
   (cont-frac n d k))
 
 (defn tan-cf* [x k]
-  (defn n [i] (if (= i 1) x
-                       (- (*' x x))))
+  (defn n [i] (if (= i 1) x (- (u/square x))))
   (defn d [i] (- (* 2 i) 1))
   (cont-frac* n d k))
 

@@ -14,7 +14,6 @@
 ;;; Exercise 1.22
 
 (defn- search-helper [start end n primes]
-  "Searches for the first *n* primes in the range (both ends inclusive). Returns a vector."
   (cond (= n 0) primes
         (= start end) primes
         (even? start) (search-helper (+ start 1) end n primes)
@@ -22,6 +21,7 @@
         :else (search-helper (+ start 1) end n primes)))
 
 (defn search-first-n-primes-in-range [start end n]
+  "Searches for the first *n* primes in the range (both ends inclusive). Returns a vector."
   (search-helper start end n []))
 
 (defn- report-prime [elapsed-time]
@@ -191,7 +191,7 @@
 ;; Modify the expmod procedure to signal if it discovers a nontrivial square root of 1, and use
 ;; this to implement the Miller-Rabin test with a procedure analogous to fermat-test.
 (defn- check-and-square [a m]
-  (def square-modulo (rem (s/square a) m))
+  (def square-modulo (rem (u/square a) m))
   (if (or (= a 1) (= a (- m 1)) (not (= square-modulo 1)))
     square-modulo
     0))

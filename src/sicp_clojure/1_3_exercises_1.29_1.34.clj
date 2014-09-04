@@ -103,11 +103,12 @@
   (accumulate product-combiner 1 term a next-a b))
 
 (defn geometric-sum [ratio a n]
+  {:pre [(not (= ratio 0))]}
   (defn term [n] (* (double a) (m/expt ratio n)))
   (sum-acc term 0 inc n))
 
 (defn sine-product [x n]
-  (defn term [n] (- 1.0 (/ (* x x) (* n n Math/PI Math/PI))))
+  (defn term [n] (- 1.0 (/ (u/square x) (* (u/square n) (u/square Math/PI)))))
   (* x (product-acc term 1 inc n)))
 
 ;; b. If your accumulate procedure generates a recursive process, write one that generates an
@@ -135,7 +136,7 @@
   (accumulate* product-combiner 1 term a next-a b))
 
 (defn sine-product* [x n]
-  (defn term [n] (- 1.0 (/ (* x x) (* n n Math/PI Math/PI))))
+  (defn term [n] (- 1.0 (/ (u/square x) (* (u/square n) (u/square Math/PI)))))
   (* x (product-acc* term 1 inc n)))
 
 
@@ -188,7 +189,7 @@
   (t/is (= 1 (factorial-iter 1)))
   (t/is (= 2 (factorial-iter 2)))
   (t/is (= 120 (factorial-iter 5)))
-  (t/is (u/equal-to? 0.707106781 (geometric-sum 1/2 1/2 50)))
+  (t/is (u/equal-to? (* 1/2 (/ (- 1 (m/expt 0.5 50)) (- 1 0.5))) (geometric-sum 0.5 0.5 50)))
   (t/is (u/equal-to? 1 (sine-product (/ Math/PI 2) 100)))
   (t/is (u/equal-to? 1 (sine-product (/ Math/PI 2) 1000)))
   (t/is (u/equal-to? 0.707106781 (sine-product* (/ Math/PI 4) 1000)))

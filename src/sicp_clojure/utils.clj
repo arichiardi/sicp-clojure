@@ -16,7 +16,7 @@
   object, including those declared by the class or interface and those inherited from superclasses
   and superinterfaces.\". See java.lang.Class/getMethods for details.
   If a second argument is provided as valid regex o string, the list is filtered according to it."
-  {:pre [(nil? instance)]}
+  {:pre [(not (nil? instance))]}
   (filter #(re-find (re-pattern (or string #".*")) %) (map #(.getName %) (-> instance class .getMethods))))
 
 
@@ -84,17 +84,35 @@
   (equality-comparison-with-scale-fn 0.001))
 
 
+(defn square [x]
+  "Calculates the square of x."
+  (*' x x))
+
+(defn cube [x]
+  "Calculates the cube of x."
+  (*' x x x))
+
 (defn average
   "Calculates the average of two or more numbers."
   ([] 0)
-  ([xs] (/ (reduce + xs) (double (count xs)))))
+  ([& xs] (/ (reduce + xs) (double (count xs)))))
 
 
+(defn average-damp [f]
+  "Returns a function that uses average damping to make the approximations (of x) converge.
+  Namely, given a function f, we consider the function whose value at x is equal to
+  the average of x and f(x). [sicp, 1.3.4 Procedures as Returned Values]"
+  (fn [x] (average x (f x))))
+
+(t/run-tests)
 (t/deftest tests
   (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))
   (t/is (= 1.342 (round-to-p-decimals 1.3415 3)))
   (t/is (= 1.341 (round-to-p-decimals 1.3412 3)))
   (t/is (= 0.0 (round-to-p-decimals 0 1)))
-  (t/is (equal-to? 2.5 (average [3 2])) "Average of [3 2]")
-  (t/is (equal-to? 2 (average [3 2 1])) "Average of [3 2 1]")
-  (t/is (equal-to? 6.1 (average [3.7 4.1 9.3 12.4 1])) "Average of [3.7 4.1 9.3 12.4 1]"))
+  (t/is (equal-to? 2.5 (average 3 2)) "Average of [3 2]")
+  (t/is (equal-to? 2 (average 3 2 1)) "Average of [3 2 1]")
+  (t/is (equal-to? 6.1 (average 3.7 4.1 9.3 12.4 1)) "Average of [3.7 4.1 9.3 12.4 1]")
+  (t/is (= 55.0 ((average-damp (fn [x] (* x x))) 10)))
+  (t/is (= 9 (square 3)))
+  (t/is (= 27 (cube 3))))

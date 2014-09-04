@@ -3,7 +3,7 @@
             [clojure.math.numeric-tower :as m :refer (expt abs)]
             [sicp-clojure.utils :as u]))
 
-;;; 1.1.7 Example: Square Roots by Newton's Method
+;;; 1.1.7  Example: Square Roots by Newton's Method
 ;; No changes from the original
 (defn- average [x y]
   (/ (+ x y) 2))

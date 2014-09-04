@@ -1,8 +1,9 @@
 (ns sicp-clojure.1-2-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (round)]))
+            [clojure.math.numeric-tower :as m :refer (round)]
+            [sicp-clojure.utils :as u]))
 
-;;; 1.2.2 Example: Counting change
+;;; 1.2.2  Example: Counting change
 
 ;; No changes from the original
 (defn first-denomination [kinds-of-coins]
@@ -54,12 +55,9 @@
 (defn expt* [b n]
   (expt-iter b n 1))
 
-(defn square [x]
-  (*' x x))
-
 (defn fast-expt [b n]
   (cond (= n 0) 1
-        (even? n) (square (fast-expt b (quot n 2)))
+        (even? n) (u/square (fast-expt b (quot n 2)))
         :else (*' b (fast-expt b (- n 1)))))
 
 

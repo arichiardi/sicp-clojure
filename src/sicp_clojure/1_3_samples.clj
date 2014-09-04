@@ -94,6 +94,43 @@
   (fixed-point (fn [y] (/ (+ y (/ x y)) 2)) 1.0))
 
 
+;;; 1.3.4  Procedures as Returned Values
+
+(defn sqrt** [x]
+  (fixed-point (u/average-damp (fn [y] (/ x y))) 1.0))
+
+(defn cube-root [x]
+  (fixed-point (u/average-damp (fn [y] (/ x (u/square y)))) 1.0))
+
+;; Newton's method
+(def ^:private dx 0.00001)
+
+(defn deriv [g]
+  (fn [x] (/ (- (g (+ x dx)) (g x)) dx)))
+
+(defn- newton-transform [g]
+  (fn [x] (- x (/ (g x) ((deriv g) x)))))
+
+(defn newtons-method [g guess]
+  (fixed-point (newton-transform g) guess))
+
+(defn sqrt*** [x]
+  (newtons-method (fn [y] (- (u/square y) x)) 1.0))
+
+(defn fixed-point-of-transform [g transform guess]
+  (fixed-point (transform g) guess))
+
+(defn sqrt**** [x]
+  (fixed-point-of-transform (fn [y] (/ x y))
+                            u/average-damp
+                            1.0))
+
+(defn sqrt***** [x]
+  (fixed-point-of-transform (fn [y] (- (u/square y) x))
+                            newton-transform
+                            1.0))
+
+
 (t/deftest tests
   (t/is (= 3025 (sum-cubes 1 10)))
   (t/is (= 55 (sum-integers 1 10)))
@@ -109,4 +146,10 @@
                                              2.0)))
   (t/is (u/equal-to? 0.7390822985224023 (fixed-point cos 1.0)))
   (t/is (u/equal-to? 1.2587315962971173 (fixed-point (fn [x] (+ (sin x) (cos x))) 1.0)))
-  (t/is (u/equal-to? (m/sqrt 2) (sqrt* 2))))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt* 2)))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt** 2)))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt*** 2)))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt**** 2)))
+  (t/is (u/equal-to? (m/sqrt 2) (sqrt***** 2)))
+  (t/is (u/equal-to? 3.0 (cube-root 27)))
+  (t/is (u/equal-to? 75.0 ((deriv cube) 5))))
