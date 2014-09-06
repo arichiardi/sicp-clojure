@@ -12,16 +12,18 @@
 
 
 (defn methods-of [instance & [string]]
+  {:pre [(not (nil? instance))]}
   "Returns the \"[...] public member methods of the class or interface represented by this Class
   object, including those declared by the class or interface and those inherited from superclasses
   and superinterfaces.\". See java.lang.Class/getMethods for details.
   If a second argument is provided as valid regex o string, the list is filtered according to it."
-  {:pre [(not (nil? instance))]}
+
   (filter #(re-find (re-pattern (or string #".*")) %) (map #(.getName %) (-> instance class .getMethods))))
 
 
 ;; from www.bestinclass.dk/index.clj/2010/02/benchmarking-jvm-languages.html
 (defmacro microbench [n expr]
+  {:pre [(> n 2)]}
   "Evaluates the expression n number of times, returning the average
   time spent in computation, removing highest and lowest values.
 
@@ -30,7 +32,7 @@
 
   Before timings begin, a warmup is performed lasting either 1 minute or
   1 full computational cycle, depending on which comes first."
-  {:pre [(> n 2)]}
+
   `(let [warm-up#  (let [start# (System/currentTimeMillis)]
                      (println "Warming up!")
                      (while (< (System/currentTimeMillis) (+ start# (* 60 1000)))
@@ -84,6 +86,8 @@
   (equality-comparison-with-scale-fn 0.001))
 
 
+;; Maths
+
 (defn square [x]
   "Calculates the square of x."
   (*' x x))
@@ -92,11 +96,22 @@
   "Calculates the cube of x."
   (*' x x x))
 
+(defn sin [x]
+  "Calculates the sine of x."
+  (Math/sin x))
+
+(defn cos [x]
+  "Calculates the cosine of x."
+  (Math/cos x))
+
+(defn log [x n]
+  "Calculates the log of x to the base n."
+  (/ (Math/log10 x) (Math/log10 n)))
+
 (defn average
   "Calculates the average of two or more numbers."
   ([] 0)
   ([& xs] (/ (reduce + xs) (double (count xs)))))
-
 
 (defn average-damp [f]
   "Returns a function that uses average damping to make the approximations (of x) converge.
@@ -104,7 +119,7 @@
   the average of x and f(x). [sicp, 1.3.4 Procedures as Returned Values]"
   (fn [x] (average x (f x))))
 
-(t/run-tests)
+
 (t/deftest tests
   (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))
   (t/is (= 1.342 (round-to-p-decimals 1.3415 3)))
@@ -115,4 +130,6 @@
   (t/is (equal-to? 6.1 (average 3.7 4.1 9.3 12.4 1)) "Average of [3.7 4.1 9.3 12.4 1]")
   (t/is (= 55.0 ((average-damp (fn [x] (* x x))) 10)))
   (t/is (= 9 (square 3)))
-  (t/is (= 27 (cube 3))))
+  (t/is (= 27 (cube 3)))
+  (t/is (equal-to? 2 (log 4 2))))
+
