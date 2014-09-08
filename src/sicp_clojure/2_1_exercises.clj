@@ -1,5 +1,6 @@
 (ns sicp-clojure.2-1-exercises
   (:require [clojure.test :as t]
+            [clojure.math.numeric-tower :as m :refer (gcd)]
             [sicp-clojure.2-1-samples :as s]))
 
 ;;; Exercise 2.1
@@ -9,8 +10,10 @@
 ;; only the numerator is negative.
 
 (defn make-rat* [n d]
-  (cond (or (and (neg? n) (neg? d)) (and (pos? n) (neg? d))) (cons (- n) (cons (- d) []))
-        :else (cons n (cons d []))))
+  (let [g (m/gcd n d)])
+  (if (neg? d)
+    (cons (- n) (cons (- d) []))
+    (cons n (cons d []))))
 
 
 (t/deftest tests
