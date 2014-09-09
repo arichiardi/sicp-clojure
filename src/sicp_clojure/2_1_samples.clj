@@ -6,6 +6,7 @@
 ;;; 2.1.1  Example: Arithmetic Operations for Rational
 
 (defn make-rat [n d]
+  {:pre [(not= d 0)]}
   (let [g (m/gcd n d)]
     (cons (quot n g) (cons (quot d g) []))))
 
@@ -38,10 +39,10 @@
 (defn print-rat [x]
   (println (numer x) "/" (denom x)))
 
+
 (def one-half (make-rat 1 2))
 (def one-third (make-rat 1 3))
 
-(t/run-tests)
 (t/deftest tests
   (t/is (equal-rat? (make-rat 5 6) (add-rat one-half one-third)))
   (t/is (equal-rat? (make-rat 1 6) (mul-rat one-half one-third)))

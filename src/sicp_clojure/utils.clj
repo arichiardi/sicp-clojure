@@ -11,28 +11,26 @@
   (-> (Double/doubleToRawLongBits d) (java.lang.Long/toBinaryString)))
 
 
-(defn methods-of [instance & [string]]
-  {:pre [(not (nil? instance))]}
+(defn methods-of
   "Returns the \"[...] public member methods of the class or interface represented by this Class
   object, including those declared by the class or interface and those inherited from superclasses
   and superinterfaces.\". See java.lang.Class/getMethods for details.
   If a second argument is provided as valid regex o string, the list is filtered according to it."
-
+  [instance & [string]]
+  {:pre [(not (nil? instance))]}
   (filter #(re-find (re-pattern (or string #".*")) %) (map #(.getName %) (-> instance class .getMethods))))
 
 
 ;; from www.bestinclass.dk/index.clj/2010/02/benchmarking-jvm-languages.html
-(defmacro microbench [n expr]
-  {:pre [(> n 2)]}
+(defmacro microbench
   "Evaluates the expression n number of times, returning the average
-  time spent in computation, removing highest and lowest values.
-
-  If the body of expr returns nil, only the timing is returned otherwise
-  the result is printed - does not affect timing.
-
-  Before timings begin, a warmup is performed lasting either 1 minute or
-  1 full computational cycle, depending on which comes first."
-
+   time spent in computation, removing highest and lowest values.
+   If the body of expr returns nil, only the timing is returned otherwise
+   the result is printed - does not affect timing.
+   Before timings begin, a warmup is performed lasting either 1 minute or
+   1 full computational cycle, depending on which comes first."
+  [n expr]
+  {:pre [(> n 2)]}
   `(let [warm-up#  (let [start# (System/currentTimeMillis)]
                      (println "Warming up!")
                      (while (< (System/currentTimeMillis) (+ start# (* 60 1000)))
@@ -59,23 +57,25 @@
      timings#))
 
 
-(defn round-to-p-decimals [x p]
+(defn round-to-p-decimals
   "Rounds a number x to a precision of p significant digits."
-  (/ (m/round (* (double x) (m/expt 10 p))) (double (m/expt 10 p))))
+  [x p] (/ (m/round (* (double x) (m/expt 10 p))) (double (m/expt 10 p))))
 
 
-(defn- equality-comparison-fn [epsilon]
+(defn- equality-comparison-fn
   "Returns a function for evaluating the equality of its two arguments.
   The equality check is a simple comparison between their difference and the input epsilon.
   With this implementation, the comparison fn doesn't work with big numbers."
+  [epsilon]
   (fn [x y]
     (< (m/abs (- x y)) epsilon)))
 
 
-(defn- equality-comparison-with-scale-fn [epsilon]
+(defn- equality-comparison-with-scale-fn
   "Returns a function for evaluating the equality of its two arguments.
   The equality check is a simple comparison between their difference and the epsilon
   is used for comparing them."
+  [epsilon]
   (fn [x y]
     (let [scale (if (and (not (zero? x)) (not (zero? y))) (m/abs x) 1)]
       (< (m/abs (- x y)) (* scale epsilon)))))
@@ -86,37 +86,37 @@
   (equality-comparison-with-scale-fn 0.001))
 
 
-;; Maths
-
-(defn square [x]
+;; Math
+(defn square
   "Calculates the square of x."
-  (*' x x))
+  [x] (*' x x))
 
-(defn cube [x]
+(defn cube
   "Calculates the cube of x."
-  (*' x x x))
+  [x] (*' x x x))
 
-(defn sin [x]
+(defn sin
   "Calculates the sine of x."
-  (Math/sin x))
+  [x] (Math/sin x))
 
-(defn cos [x]
+(defn cos
   "Calculates the cosine of x."
-  (Math/cos x))
+  [x] (Math/cos x))
 
-(defn log [x n]
+(defn log
   "Calculates the log of x to the base n."
-  (/ (Math/log10 x) (Math/log10 n)))
+  [x n] (/ (Math/log10 x) (Math/log10 n)))
 
 (defn average
   "Calculates the average of two or more numbers."
   ([] 0)
-  ([& xs] (/ (reduce + xs) (double (count xs)))))
+  ([& xs] (/ (reduce + xs) (count xs))))
 
-(defn average-damp [f]
+(defn average-damp
   "Returns a function that uses average damping to make the approximations (of x) converge.
   Namely, given a function f, we consider the function whose value at x is equal to
   the average of x and f(x). [sicp, 1.3.4 Procedures as Returned Values]"
+  [f]
   (fn [x] (average x (f x))))
 
 
@@ -132,4 +132,3 @@
   (t/is (= 9 (square 3)))
   (t/is (= 27 (cube 3)))
   (t/is (equal-to? 2 (log 4 2))))
-

@@ -24,8 +24,9 @@
       (+ (/ 1.0 (* a (+ a 2))) (pi-sum (+ a 4) b))))
 
 ;; high-order function
-(defn sum [term a next-a b]
+(defn sum
   "Sums from a through b."
+  [term a next-a b]
   (if (> a b)
     0
     (+ (term a) (sum term (next-a a) next-a b))))

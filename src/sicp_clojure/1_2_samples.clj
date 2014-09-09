@@ -27,15 +27,17 @@
 ;; Implementation using a list for the denominations.
 (def denomination-kind [1 5 10 25 50])
 
-(defn- cc* [amount denominations]
+(defn- cc*
   "Recursive helper function to count the change."
+  [amount denominations]
   (cond (= amount 0) 1
         (or (< amount 0) (empty? denominations)) 0
         :else (+ (cc* amount (rest denominations))
                  (cc* (- amount (first denominations)) denominations))))
 
-(defn count-change* [amount]
+(defn count-change*
   "Calculates the number of times you can give change with the give denominations."
+  [amount]
   (cc* amount denomination-kind))
 
 ;;; 1.2.4  Exponentiation
@@ -69,7 +71,7 @@
   (= (rem b a) 0))
 
 (defn- find-divisor [n test-divisor]
-  (cond (> (square test-divisor) n) n
+  (cond (> (u/square test-divisor) n) n
         (divides? test-divisor n) test-divisor
         :else (find-divisor n (+ test-divisor 1))))
 
@@ -82,7 +84,7 @@
 ;; Alternative implementation with Clojure's recur. It is necessary for the exercises,
 ;; as the other find-divisor easily causes stack overflows for big numbers.
 (defn- find-divisor-recur [n test-divisor]
-  (cond (> (square test-divisor) n) n
+  (cond (> (u/square test-divisor) n) n
         (divides? test-divisor n) test-divisor
         :else (recur n (+ test-divisor 1))))
 
@@ -95,7 +97,7 @@
 ;; Fermat's test
 (defn expmod [base exp m]
   (cond (= exp 0) 1
-        (even? exp) (rem (square (expmod base (quot exp 2) m)) m)
+        (even? exp) (rem (u/square (expmod base (quot exp 2) m)) m)
         :else (rem (*' base (expmod base (- exp 1) m)) m)))
 
 (defn- fermat-test [n]

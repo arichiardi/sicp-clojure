@@ -82,7 +82,7 @@
   (if (= n 2) 3 (+ n 2)))
 
 (defn- find-divisor* [n test-divisor]
-  (cond (> (s/square test-divisor) n) n
+  (cond (> (u/square test-divisor) n) n
         (s/divides? test-divisor n) test-divisor
         :else (find-divisor* n (next* test-divisor))))
 

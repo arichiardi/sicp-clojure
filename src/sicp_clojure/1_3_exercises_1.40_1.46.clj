@@ -109,7 +109,7 @@
   (def good-enough? (fn [guess] (u/equal-to? guess (f guess))))
   ((iterative-improve good-enough? f) first-guess))
 
-
+(t/run-tests)
 (t/deftest tests
   (u/equal-to? 5.0 (s/newtons-method (cubic 3 -10 0) 1.0))
   (t/is (= 21 (((double* (double* double*)) inc) 5)))
