@@ -1,6 +1,6 @@
 (ns sicp-clojure.2-1-exercises
   (:require :reload-all [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (abs gcd)]
+            [clojure.math.numeric-tower :as m :refer (abs gcd expt)]
             [sicp-clojure.utils :as u]
             [sicp-clojure.2-1-samples :as s]))
 
@@ -126,6 +126,60 @@
 (def point2 (make-point 1 -2))
 
 
+;;; Exercise 2.4
+;; What is the corresponding definition of cdr?
+;; (Hint: To verify that this works, make use of the substitution model of section 1.1.5.)
+
+(defn cons* [x y]
+  (fn [m] (m x y)))
+
+(defn car [z]
+  (z (fn [p q] p)))
+
+;; (car (cons* [x y]))
+;; (car (fn [m] (m x y)))
+;; ((fn [m] (m x y)) (fn [p q] p)) ; passes a lambda to the first lambda
+;; ((fn [p q] p) x y)              ; substitutes the lambda to parameter m
+;; (x)                             ; substitutes p q and therefore returns x
+
+(defn cdr [z]
+  (z (fn [p q] q)))
+
+;; (cdr (cons* [x y]))
+;; (cdr (fn [m] (m x y)))
+;; ((fn [m] (m x y)) (fn [p q] q)) ; passes a lambda to the first lambda
+;; ((fn [p q] q) x y)              ; substitutes the lambda to parameter m
+;; (y)                             ; substitutes p q and therefore returns x
+
+
+;;; Exercise 2.5
+;; Show that we can represent pairs of nonnegative integers using only numbers and arithmetic
+;; operations if we represent the pair a and b as the integer that is the product 2^a 3^b.
+;; Give the corresponding definitions of the procedures cons, car, and cdr.
+
+;; Playing around with the logarithm rules:
+;; log2 (2^a 3^b) = log2 (2^a) + log2 (3^b) = a + b log2 (3)
+;;
+;; Similarly:
+;; log3 (2^a 3^b) = log3 (2^a) + log3 (3^b) = a log3 (2) + b
+;;
+;; Therefore:
+;; a = log2 (2^a 3^b) - b log2 (3)
+;; b = log2 (2^a 3^b) - a log3 (2)
+
+(defn cons** [a b]
+  {:pre [(and (>= a 0) (>= b 0))]}
+  (fn [f] (f a b (* (m/expt 2 a) (m/expt 3 b)))))
+
+(defn car* [z]
+  (z (fn [a b prod] (- (u/log prod 2) (* b (u/log 3 2))))))
+
+(defn cdr* [z]
+  (z (fn [a b prod] (- (u/log prod 3) (* a (u/log 2 3))))))
+
+
+
+(t/run-tests)
 (t/deftest tests
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* -1 -2)))
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* 1 2)))
@@ -143,4 +197,8 @@
   (t/is (= 8 (area-rectangle rect1)))
   (t/is (= 24 (area-rectangle rect2)))
   (t/is (= 12 (perimeter-rectangle rect1)))
-  (t/is (= 20 (perimeter-rectangle rect2))))
+  (t/is (= 20 (perimeter-rectangle rect2)))
+  (t/is (= 1 (car (cons* 1 2))))
+  (t/is (= 2 (cdr (cons* 1 2))))
+  (t/is (== 1 (car* (cons** 1 2))))
+  (t/is (== 2 (cdr* (cons** 1 2)))))
