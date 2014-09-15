@@ -178,8 +178,145 @@
   (z (fn [a b prod] (- (u/log prod 3) (* a (u/log 2 3))))))
 
 
+;;; Exercise 2.6
+;; This representation is known as Church numerals, after its inventor, Alonzo Church,
+;; the logician who invented the lambda calculus.
+;; Define one and two directly (not in terms of zero and add-1). (Hint: Use substitution
+;; to evaluate (add-1 zero)). Give a direct definition of the addition procedure +
+;; (not in terms of repeated application of add-1).
 
-(t/run-tests)
+(def zero (fn [f] (fn [x] x)))
+
+(defn add-1 [n]
+  (fn [f] (fn [x] (f ((n f) x)))))
+
+;; (add-1 zero)
+;; (fn [f] (fn [x] (f ((fn [f] (fn [x] x)) f) x)))
+;; (fn [f] (fn [x] (f ((fn [x] x) x))))
+;; (fn [f] (fn [x] (f x)))              ; f applied one time to x
+
+;; Church numerals return two-parameter high-order functions which define the numeral "value"
+;; by number of f (first parameter) function applications over x (second parameter).
+;; In the case of zero, f is never applied to x. One applies f to x once. Two applies it twice.
+
+(def one (fn [f] (fn [x] (f x))))
+(def two (fn [f] (fn [x] (f (f x)))))
+
+;; The sum of two numerals will follow the same principle: it will apply f to x n times,
+;; where n is the sum of the f applications of the addends.
+;; This can be observed using substitution in evaluating (add-1 zero) as suggested.
+;; The returned high-order function eventually applies f to x just once (zero never applies it)
+;; because we are incrementing by 1. Therefore (add-1 one) will result in applying f twice,
+;; as shown below.
+
+;; (add-1 zero)
+;; (fn [f] (fn [x] (f ((fn [f] (fn [x] (f x))) f) x)))
+;; (fn [f] (fn [x] (f ((fn [x] (f x)) x))))
+;; (fn [f] (fn [x] (f (f x))))              ; f applied two times to x
+
+(defn church+ [n m]
+  (fn [f] (fn [x] ((m f) ((n f) x)))))
+
+;; Definitions for testing commutativity, associativity and identity.
+(def church-one+zero (church+ one zero))
+(def church-one+two (church+ one two))
+(def church-two+one (church+ two one))
+(def church-one+zero+two (church+ church-one+zero two))
+(def church-zero+two+one (church+ zero church-two+one))
+
+
+;;; Exercise 2.7
+;; This exercise is part of 2.1.4  Extended Exercise: Interval Arithmetic.
+;; Alyssa's program is incomplete because she has not specified the implementation of the interval abstraction.
+;; [...] Define selectors upper-bound and lower-bound to complete the implementation.
+
+(defn make-interval [a b] (cons a (cons b [])))
+
+(defn lower-bound [x] (first x))
+
+(defn upper-bound [x] (second x))
+
+;; For testing we will need:
+
+(def interval1 (make-interval 6.12 7.48))
+(def interval2 (make-interval 4.465 4.935))
+
+(defn parallel-resistance [r1 r2]
+  (reciprocal-interval (add-interval (reciprocal-interval r1)
+                                     (reciprocal-interval r2))))
+
+(defn reciprocal-interval [x]
+  (make-interval (/ (upper-bound x)) (/ (lower-bound x))))
+
+(defn equal-interval? [x y]
+  (and (u/equal-to? (lower-bound x) (lower-bound y))
+       (u/equal-to? (upper-bound x) (upper-bound y))))
+
+;; And the following are defined by Alyssa:
+
+(defn add-interval [x y]
+  (make-interval (+ (lower-bound x) (lower-bound y))
+                 (+ (upper-bound x) (upper-bound y))))
+
+(defn mul-interval [x y]
+  (let [p1 (* (lower-bound x) (lower-bound y))
+        p2 (* (lower-bound x) (upper-bound y))
+        p3 (* (upper-bound x) (upper-bound y))
+        p4 (* (upper-bound x) (lower-bound y))]
+    (make-interval (min p1 p2 p3 p4)
+                   (max p1 p2 p3 p4))))
+
+(defn div-interval [x y]
+  (mul-iterval x (reciprocal-interval y)))
+
+
+;;; Exercise 2.8
+;; Using reasoning analogous to Alyssa's, describe how the difference of two intervals may be computed.
+;; Define a corresponding subtraction procedure, called sub-interval.
+
+(defn sub-interval [x y]
+  (let [p1 (- (lower-bound x) (upper-bound y))
+        p2 (- (upper-bound x) (lower-bound y))]
+    (make-interval (min p1 p2) (max p1 p2))))
+
+
+;;; Exercise 2.9
+;; The width of an interval is half of the difference between its upper and lower bounds.
+;; Show that the width of the sum (or difference) of two intervals is a function only of
+;; the widths of the intervals being added (or subtracted). Give examples to show that this
+;; is not true for multiplication or division.
+
+(defn width-interval
+  "Half of the difference between its upper and lower bounds."
+  [x]
+  (/ (- (upper-bound x) (lower-bound x)) 2))
+
+;; For addition (or subtraction), it is shown below how it is possible to get sum the two individual widths
+;; in order to obtain the width of the sum (uncomment to evaluate).
+
+;; (width-interval interval1)
+;; (width-interval interval2)
+;; (width-interval (add-interval interval1 interval2))
+
+;; On the contrary, for multiplication (or division) the above statement doesn't hold true.
+
+;; (width-interval (mul-interval interval1 interval2))
+
+
+;;; Exercise 2.10
+;; Ben Bitdiddle, an expert systems programmer, looks over Alyssa's shoulder and comments that it is not clear
+;; what it means to divide by an interval that spans zero. Modify Alyssa's code to check for this condition
+;; and to signal an error if it occurs.
+
+;; We want to avoid the case when, for instance, the reciprocal of the interval [-2,2] as defined by the
+;; book (above) produces [1/2,1/-2] = [0.5 -0.5].
+
+(defn div-interval* [x y]
+  {:pre [(or (< (upper-bound y) 0)
+             (> (lower-bound y) 0))]}
+  (mul-iterval x (reciprocal-interval y)))
+
+
 (t/deftest tests
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* -1 -2)))
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* 1 2)))
@@ -201,4 +338,23 @@
   (t/is (= 1 (car (cons* 1 2))))
   (t/is (= 2 (cdr (cons* 1 2))))
   (t/is (== 1 (car* (cons** 1 2))))
-  (t/is (== 2 (cdr* (cons** 1 2)))))
+  (t/is (== 2 (cdr* (cons** 1 2))))
+  (t/is (= 3 ((zero inc) 3)))
+  (t/is (= 4 (((add-1 zero) inc) 3)))
+  (t/is (= 4 ((one inc) 3)))
+  (t/is (= 5 ((two inc) 3)))
+  (t/is (= 6 (((church+ two one) inc) 3)))
+  (t/is (= 4 (((church+ zero one) inc) 3)))
+  (t/is (= ((one inc) 3) ((church-one+zero inc) 3)))           ; Additive identity
+  (t/is (= ((church-two+one inc) 3) ((church-one+two inc) 3))) ; Commutativity
+  (t/is (= ((church-one+zero+two inc) 3) ((church-zero+two+one inc) 3)))
+  (t/is (u/equal-to? 6.12 (lower-bound interval1)))
+  (t/is (u/equal-to? 7.48 (upper-bound interval1)))
+  (t/is (equal-interval? (make-interval 2.58 2.973) (parallel-resistance interval1 interval2)))
+  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval interval1 interval2)))
+  (t/is (equal-interval? (make-interval 1.2401 1.6752) (div-interval interval1 interval2)))
+  (t/is (equal-interval? (make-interval (- 3.015) (- 1.185)) (sub-interval interval2 interval1)))
+  (t/is (equal-interval? (make-interval 1.185 3.015) (sub-interval interval1 interval2)))
+  (t/is (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (add-interval interval1 interval2))))
+  (t/is (not (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (mul-interval interval1 interval2))))))
+
