@@ -230,29 +230,15 @@
 ;; Alyssa's program is incomplete because she has not specified the implementation of the interval abstraction.
 ;; [...] Define selectors upper-bound and lower-bound to complete the implementation.
 
-(defn make-interval [a b] (cons a (cons b [])))
+(defn make-interval [a b]
+  {:pre [(<= a b)]}
+  (cons a (cons b [])))
 
 (defn lower-bound [x] (first x))
 
 (defn upper-bound [x] (second x))
 
-;; For testing we will need:
-
-(def interval1 (make-interval 6.12 7.48))
-(def interval2 (make-interval 4.465 4.935))
-
-(defn parallel-resistance [r1 r2]
-  (reciprocal-interval (add-interval (reciprocal-interval r1)
-                                     (reciprocal-interval r2))))
-
-(defn reciprocal-interval [x]
-  (make-interval (/ (upper-bound x)) (/ (lower-bound x))))
-
-(defn equal-interval? [x y]
-  (and (u/equal-to? (lower-bound x) (lower-bound y))
-       (u/equal-to? (upper-bound x) (upper-bound y))))
-
-;; And the following are defined by Alyssa:
+;; The following are defined by Alyssa:
 
 (defn add-interval [x y]
   (make-interval (+ (lower-bound x) (lower-bound y))
@@ -267,7 +253,23 @@
                    (max p1 p2 p3 p4))))
 
 (defn div-interval [x y]
-  (mul-iterval x (reciprocal-interval y)))
+  (mul-interval x (make-interval (/ (upper-bound y)) (/ (lower-bound y)))))
+
+;; And for testing we will need:
+
+(def interval1 (make-interval 6.12 7.48))
+(def interval2 (make-interval 4.465 4.935))
+
+(defn reciprocal-interval [x]
+  (make-interval (/ (upper-bound x)) (/ (lower-bound x))))
+
+(defn parallel-resistance [r1 r2]
+  (reciprocal-interval (add-interval (reciprocal-interval r1)
+                                     (reciprocal-interval r2))))
+
+(defn equal-interval? [x y]
+  (and (u/equal-to? (lower-bound x) (lower-bound y))
+       (u/equal-to? (upper-bound x) (upper-bound y))))
 
 
 ;;; Exercise 2.8
@@ -314,7 +316,37 @@
 (defn div-interval* [x y]
   {:pre [(or (< (upper-bound y) 0)
              (> (lower-bound y) 0))]}
-  (mul-iterval x (reciprocal-interval y)))
+  (mul-interval x (reciprocal-interval y)))
+
+
+;;; Exercise 2.11
+;; In passing, Ben also cryptically comments: "By testing the signs of the endpoints of the intervals,
+;; it is possible to break mul-interval into nine cases, only one of which requires more than two multiplications."
+;; Rewrite this procedure using Ben's suggestion.
+
+(defn mul-interval* [x y]
+  (let [lbx (lower-bound x)
+        lby (lower-bound y)
+        ubx (upper-bound x)
+        uby (upper-bound y)]
+    (cond (and (< lbx 0)  (< ubx 0)  (>= lby 0) (>= uby 0)) (make-interval (* lbx uby) (* ubx lby))
+          (and (< lbx 0)  (< ubx 0)  (< lby 0)  (< uby 0))  (make-interval (* ubx uby) (* lbx lby))
+          (and (< lbx 0)  (< ubx 0)  (< lby 0)  (>= uby 0)) (make-interval (* lbx uby) (* lbx lby))
+          (and (>= lbx 0) (>= ubx 0) (>= lby 0) (>= uby 0)) (make-interval (* lbx lby) (* ubx uby))
+          (and (>= lbx 0) (>= ubx 0) (< lby 0)  (< uby 0))  (make-interval (* ubx lby) (* lbx uby))
+          (and (>= lbx 0) (>= ubx 0) (< lby 0)  (>= uby 0)) (make-interval (* ubx lby) (* ubx uby))
+          (and (< lbx 0)  (>= ubx 0) (>= lby 0) (>= uby 0)) (make-interval (* lbx uby) (* ubx uby))
+          (and (< lbx 0)  (>= ubx 0) (< lby 0)  (< uby 0))  (make-interval (* ubx lby) (* lbx lby))
+          (and (< lbx 0)  (>= ubx 0) (< lby 0)  (>= uby 0)) (make-interval (min (* lbx uby) (* ubx lby))
+                                                                           (max (* lbx lby) (* ubx uby))))))
+
+(def interval1-nn (make-interval -7.48 -6.12))
+(def interval1-np (make-interval -6.12 7.48))
+(def interval1-pp (make-interval 6.12 7.48))
+
+(def interval2-nn (make-interval -4.935 -4.465))
+(def interval2-np (make-interval -4.465 4.935))
+(def interval2-pp (make-interval 4.465 4.935))
 
 
 (t/deftest tests
@@ -356,5 +388,14 @@
   (t/is (equal-interval? (make-interval (- 3.015) (- 1.185)) (sub-interval interval2 interval1)))
   (t/is (equal-interval? (make-interval 1.185 3.015) (sub-interval interval1 interval2)))
   (t/is (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (add-interval interval1 interval2))))
-  (t/is (not (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (mul-interval interval1 interval2))))))
+  (t/is (not (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (mul-interval interval1 interval2)))))
+  (t/is (equal-interval? (make-interval (- 36.9138) (- 27.3258)) (mul-interval* interval1-nn interval2-pp)))
+  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval* interval1-nn interval2-nn)))
+  (t/is (equal-interval? (make-interval (- 36.9138) 33.3982) (mul-interval* interval1-nn interval2-np)))
+  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval* interval1-pp interval2-pp)))
+  (t/is (equal-interval? (make-interval (- 36.9138) (- 27.3258)) (mul-interval* interval1-pp interval2-nn)))
+  (t/is (equal-interval? (make-interval (- 33.3982) 36.9138) (mul-interval* interval1-pp interval2-np)))
+  (t/is (equal-interval? (make-interval (- 30.2022) 36.9138) (mul-interval* interval1-np interval2-pp)))
+  (t/is (equal-interval? (make-interval (- 36.9138) 30.2022) (mul-interval* interval1-np interval2-nn)))
+  (t/is (equal-interval? (make-interval (- 33.3982) 36.9138) (mul-interval* interval1-np interval2-np))))
 
