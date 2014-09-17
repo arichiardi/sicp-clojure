@@ -1,5 +1,5 @@
 (ns sicp-clojure.2-1-exercises
-  (:require :reload-all [clojure.test :as t]
+  (:require [clojure.test :as t]
             [clojure.math.numeric-tower :as m :refer (abs gcd expt)]
             [sicp-clojure.utils :as u]
             [sicp-clojure.2-1-samples :as s]))
@@ -225,130 +225,6 @@
 (def church-zero+two+one (church+ zero church-two+one))
 
 
-;;; Exercise 2.7
-;; This exercise is part of 2.1.4  Extended Exercise: Interval Arithmetic.
-;; Alyssa's program is incomplete because she has not specified the implementation of the interval abstraction.
-;; [...] Define selectors upper-bound and lower-bound to complete the implementation.
-
-(defn make-interval [a b]
-  {:pre [(<= a b)]}
-  (cons a (cons b [])))
-
-(defn lower-bound [x] (first x))
-
-(defn upper-bound [x] (second x))
-
-;; The following are defined by Alyssa:
-
-(defn add-interval [x y]
-  (make-interval (+ (lower-bound x) (lower-bound y))
-                 (+ (upper-bound x) (upper-bound y))))
-
-(defn mul-interval [x y]
-  (let [p1 (* (lower-bound x) (lower-bound y))
-        p2 (* (lower-bound x) (upper-bound y))
-        p3 (* (upper-bound x) (upper-bound y))
-        p4 (* (upper-bound x) (lower-bound y))]
-    (make-interval (min p1 p2 p3 p4)
-                   (max p1 p2 p3 p4))))
-
-(defn div-interval [x y]
-  (mul-interval x (make-interval (/ (upper-bound y)) (/ (lower-bound y)))))
-
-;; And for testing we will need:
-
-(def interval1 (make-interval 6.12 7.48))
-(def interval2 (make-interval 4.465 4.935))
-
-(defn reciprocal-interval [x]
-  (make-interval (/ (upper-bound x)) (/ (lower-bound x))))
-
-(defn parallel-resistance [r1 r2]
-  (reciprocal-interval (add-interval (reciprocal-interval r1)
-                                     (reciprocal-interval r2))))
-
-(defn equal-interval? [x y]
-  (and (u/equal-to? (lower-bound x) (lower-bound y))
-       (u/equal-to? (upper-bound x) (upper-bound y))))
-
-
-;;; Exercise 2.8
-;; Using reasoning analogous to Alyssa's, describe how the difference of two intervals may be computed.
-;; Define a corresponding subtraction procedure, called sub-interval.
-
-(defn sub-interval [x y]
-  (let [p1 (- (lower-bound x) (upper-bound y))
-        p2 (- (upper-bound x) (lower-bound y))]
-    (make-interval (min p1 p2) (max p1 p2))))
-
-
-;;; Exercise 2.9
-;; The width of an interval is half of the difference between its upper and lower bounds.
-;; Show that the width of the sum (or difference) of two intervals is a function only of
-;; the widths of the intervals being added (or subtracted). Give examples to show that this
-;; is not true for multiplication or division.
-
-(defn width-interval
-  "Half of the difference between its upper and lower bounds."
-  [x]
-  (/ (- (upper-bound x) (lower-bound x)) 2))
-
-;; For addition (or subtraction), it is shown below how it is possible to get sum the two individual widths
-;; in order to obtain the width of the sum (uncomment to evaluate).
-
-;; (width-interval interval1)
-;; (width-interval interval2)
-;; (width-interval (add-interval interval1 interval2))
-
-;; On the contrary, for multiplication (or division) the above statement doesn't hold true.
-
-;; (width-interval (mul-interval interval1 interval2))
-
-
-;;; Exercise 2.10
-;; Ben Bitdiddle, an expert systems programmer, looks over Alyssa's shoulder and comments that it is not clear
-;; what it means to divide by an interval that spans zero. Modify Alyssa's code to check for this condition
-;; and to signal an error if it occurs.
-
-;; We want to avoid the case when, for instance, the reciprocal of the interval [-2,2] as defined by the
-;; book (above) produces [1/2,1/-2] = [0.5 -0.5].
-
-(defn div-interval* [x y]
-  {:pre [(or (< (upper-bound y) 0)
-             (> (lower-bound y) 0))]}
-  (mul-interval x (reciprocal-interval y)))
-
-
-;;; Exercise 2.11
-;; In passing, Ben also cryptically comments: "By testing the signs of the endpoints of the intervals,
-;; it is possible to break mul-interval into nine cases, only one of which requires more than two multiplications."
-;; Rewrite this procedure using Ben's suggestion.
-
-(defn mul-interval* [x y]
-  (let [lbx (lower-bound x)
-        lby (lower-bound y)
-        ubx (upper-bound x)
-        uby (upper-bound y)]
-    (cond (and (< lbx 0)  (< ubx 0)  (>= lby 0) (>= uby 0)) (make-interval (* lbx uby) (* ubx lby))
-          (and (< lbx 0)  (< ubx 0)  (< lby 0)  (< uby 0))  (make-interval (* ubx uby) (* lbx lby))
-          (and (< lbx 0)  (< ubx 0)  (< lby 0)  (>= uby 0)) (make-interval (* lbx uby) (* lbx lby))
-          (and (>= lbx 0) (>= ubx 0) (>= lby 0) (>= uby 0)) (make-interval (* lbx lby) (* ubx uby))
-          (and (>= lbx 0) (>= ubx 0) (< lby 0)  (< uby 0))  (make-interval (* ubx lby) (* lbx uby))
-          (and (>= lbx 0) (>= ubx 0) (< lby 0)  (>= uby 0)) (make-interval (* ubx lby) (* ubx uby))
-          (and (< lbx 0)  (>= ubx 0) (>= lby 0) (>= uby 0)) (make-interval (* lbx uby) (* ubx uby))
-          (and (< lbx 0)  (>= ubx 0) (< lby 0)  (< uby 0))  (make-interval (* ubx lby) (* lbx lby))
-          (and (< lbx 0)  (>= ubx 0) (< lby 0)  (>= uby 0)) (make-interval (min (* lbx uby) (* ubx lby))
-                                                                           (max (* lbx lby) (* ubx uby))))))
-
-(def interval1-nn (make-interval -7.48 -6.12))
-(def interval1-np (make-interval -6.12 7.48))
-(def interval1-pp (make-interval 6.12 7.48))
-
-(def interval2-nn (make-interval -4.935 -4.465))
-(def interval2-np (make-interval -4.465 4.935))
-(def interval2-pp (make-interval 4.465 4.935))
-
-
 (t/deftest tests
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* -1 -2)))
   (t/is (s/equal-rat? (make-rat* 1 2) (make-rat* 1 2)))
@@ -369,8 +245,8 @@
   (t/is (= 20 (perimeter-rectangle rect2)))
   (t/is (= 1 (car (cons* 1 2))))
   (t/is (= 2 (cdr (cons* 1 2))))
-  (t/is (== 1 (car* (cons** 1 2))))
-  (t/is (== 2 (cdr* (cons** 1 2))))
+  (t/is (u/equal-to? 1 (car* (cons** 1 2))))
+  (t/is (u/equal-to? 2 (cdr* (cons** 1 2))))
   (t/is (= 3 ((zero inc) 3)))
   (t/is (= 4 (((add-1 zero) inc) 3)))
   (t/is (= 4 ((one inc) 3)))
@@ -379,23 +255,4 @@
   (t/is (= 4 (((church+ zero one) inc) 3)))
   (t/is (= ((one inc) 3) ((church-one+zero inc) 3)))           ; Additive identity
   (t/is (= ((church-two+one inc) 3) ((church-one+two inc) 3))) ; Commutativity
-  (t/is (= ((church-one+zero+two inc) 3) ((church-zero+two+one inc) 3)))
-  (t/is (u/equal-to? 6.12 (lower-bound interval1)))
-  (t/is (u/equal-to? 7.48 (upper-bound interval1)))
-  (t/is (equal-interval? (make-interval 2.58 2.973) (parallel-resistance interval1 interval2)))
-  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval interval1 interval2)))
-  (t/is (equal-interval? (make-interval 1.2401 1.6752) (div-interval interval1 interval2)))
-  (t/is (equal-interval? (make-interval (- 3.015) (- 1.185)) (sub-interval interval2 interval1)))
-  (t/is (equal-interval? (make-interval 1.185 3.015) (sub-interval interval1 interval2)))
-  (t/is (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (add-interval interval1 interval2))))
-  (t/is (not (u/equal-to? (+ (width-interval interval1) (width-interval interval2)) (width-interval (mul-interval interval1 interval2)))))
-  (t/is (equal-interval? (make-interval (- 36.9138) (- 27.3258)) (mul-interval* interval1-nn interval2-pp)))
-  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval* interval1-nn interval2-nn)))
-  (t/is (equal-interval? (make-interval (- 36.9138) 33.3982) (mul-interval* interval1-nn interval2-np)))
-  (t/is (equal-interval? (make-interval 27.3258 36.9138) (mul-interval* interval1-pp interval2-pp)))
-  (t/is (equal-interval? (make-interval (- 36.9138) (- 27.3258)) (mul-interval* interval1-pp interval2-nn)))
-  (t/is (equal-interval? (make-interval (- 33.3982) 36.9138) (mul-interval* interval1-pp interval2-np)))
-  (t/is (equal-interval? (make-interval (- 30.2022) 36.9138) (mul-interval* interval1-np interval2-pp)))
-  (t/is (equal-interval? (make-interval (- 36.9138) 30.2022) (mul-interval* interval1-np interval2-nn)))
-  (t/is (equal-interval? (make-interval (- 33.3982) 36.9138) (mul-interval* interval1-np interval2-np))))
-
+  (t/is (= ((church-one+zero+two inc) 3) ((church-zero+two+one inc) 3))))
