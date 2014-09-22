@@ -39,9 +39,9 @@
 (defn print-rat [x]
   (println (numer x) "/" (denom x)))
 
-
 (def one-half (make-rat 1 2))
 (def one-third (make-rat 1 3))
+
 
 (t/deftest tests
   (t/is (equal-rat? (make-rat 5 6) (add-rat one-half one-third)))

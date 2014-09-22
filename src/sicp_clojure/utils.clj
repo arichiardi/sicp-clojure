@@ -120,6 +120,24 @@
   (fn [x] (average x (f x))))
 
 
+;; Lists
+
+(defn car
+  "We can think of car as selecting the first item in the list [sicp, 2.2.1]. The names car
+  and cdr derive from the original implementation of Lisp on the IBM 704. [...] Car stands for
+  Contents of Address part of Register [sicp, note 2 to 2.1.1]"
+  [l]
+  {:pre [(seq l)]}
+  (first l))
+
+(defn cdr
+  "We can think of cdr as selecting the sublist consisting of all but the first item. [sicp, 2.2.1]
+  The names car and cdr derive from the original implementation of Lisp on the IBM 704. [...]
+  Cdr (pronounced ``could-er'') stands for ``Contents of Decrement part of Register. [sicp, note 2 to 2.1.1]"
+  [l]
+  (rest l))
+
+
 (t/deftest tests
   (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))
   (t/is (= 1.342 (round-to-p-decimals 1.3415 3)))
@@ -128,7 +146,9 @@
   (t/is (equal-to? 2.5 (average 3 2)) "Average of [3 2]")
   (t/is (equal-to? 2 (average 3 2 1)) "Average of [3 2 1]")
   (t/is (equal-to? 6.1 (average 3.7 4.1 9.3 12.4 1)) "Average of [3.7 4.1 9.3 12.4 1]")
-  (t/is (= 55.0 ((average-damp (fn [x] (* x x))) 10)))
+  (t/is (== 55.0 ((average-damp (fn [x] (* x x))) 10)))
   (t/is (= 9 (square 3)))
   (t/is (= 27 (cube 3)))
-  (t/is (equal-to? 2 (log 4 2))))
+  (t/is (equal-to? 2 (log 4 2)))
+  (t/is (= 1 (car (list 1 2 3 4))))
+  (t/is (= (list 2 3 4) (cdr (list 1 2 3 4)))))

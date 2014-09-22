@@ -5,7 +5,6 @@
 
 ;;; 1.2.2  Example: Counting change
 
-;; No changes from the original
 (defn first-denomination [kinds-of-coins]
   (cond (= kinds-of-coins 1) 1
         (= kinds-of-coins 2) 5
@@ -13,7 +12,9 @@
         (= kinds-of-coins 4) 25
         (= kinds-of-coins 5) 50))
 
-(defn- cc [amount kinds-of-coins]
+(defn- cc
+  "Recursive helper function to count the change."
+  [amount kinds-of-coins]
   (cond (= amount 0) 1
         (or (< amount 0) (= kinds-of-coins 0)) 0
         :else (+ (cc amount (- kinds-of-coins 1))
@@ -24,21 +25,6 @@
 
 ;; (count-change 11) ; uncomment to evaluate
 
-;; Implementation using a list for the denominations.
-(def denomination-kind [1 5 10 25 50])
-
-(defn- cc*
-  "Recursive helper function to count the change."
-  [amount denominations]
-  (cond (= amount 0) 1
-        (or (< amount 0) (empty? denominations)) 0
-        :else (+ (cc* amount (rest denominations))
-                 (cc* (- amount (first denominations)) denominations))))
-
-(defn count-change*
-  "Calculates the number of times you can give change with the give denominations."
-  [amount]
-  (cc* amount denomination-kind))
 
 ;;; 1.2.4  Exponentiation
 
