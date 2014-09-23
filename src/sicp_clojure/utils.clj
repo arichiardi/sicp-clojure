@@ -137,6 +137,14 @@
   [l]
   (rest l))
 
+(defn map*
+  "Map takes as arguments a procedure of one argument and a list, and returns a list of the results produced
+  by applying the procedure to each element in the list:"
+  [proc items]
+  (if (empty? items)
+    nil
+    (cons (proc (car items)) (map* proc (cdr items)))))
+
 
 (t/deftest tests
   (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))
@@ -151,4 +159,6 @@
   (t/is (= 27 (cube 3)))
   (t/is (equal-to? 2 (log 4 2)))
   (t/is (= 1 (car (list 1 2 3 4))))
-  (t/is (= (list 2 3 4) (cdr (list 1 2 3 4)))))
+  (t/is (= (list 2 3 4) (cdr (list 1 2 3 4))))
+  (t/is (= (list 10 2.5 11.6 17) (map* abs (list -10 2.5 -11.6 17))))
+  (t/is (= (list 1 4 9 16) (map* square (list 1 2 3 4)))))

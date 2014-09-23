@@ -1,5 +1,5 @@
 (ns sicp-clojure.2-1-exercises
-  (:require :reload-all [clojure.test :as t]
+  (:require [clojure.test :as t]
             [sicp-clojure.utils :as u]))
 
 
@@ -84,7 +84,69 @@
   (cons frst (reverse* (helper args []))))
 
 
-(t/run-tests)
+;;; Exercise 2.21
+;; Here are two different definitions of square-list. Complete both of them by filling in the missing
+;; expressions:
+
+(defn square-list [items]
+  (if (empty? items)
+    nil
+    (let [head (u/car items)]
+      (cons (* head head) (square-list (u/cdr items))))))
+
+(defn square-list* [items]
+  (u/map* u/square items))
+
+
+;;; Exercise 2.22
+;; Louis Reasoner tries to rewrite the first square-list procedure of exercise 2.21 so that it evolves
+;; an iterative process:
+
+(defn square-list** [items]
+  (defn iter [things answer]
+    (if (empty? things)
+        answer
+        (iter (u/cdr things)
+              (cons (u/square (u/car things)) answer))))
+  (iter items nil))
+
+;; Unfortunately, defining square-list this way produces the answer list in the reverse order of the one
+;; desired. Why?
+
+;; The answer is reversed because cons always appends at the beginning of answer the car of things.
+;; (square-list** (list 1 2 3 4))
+
+;; Louis then tries to fix his bug by interchanging the arguments to cons:
+
+(defn square-list*** [items]
+  (defn iter [things answer]
+    (if (empty? things)
+        answer
+        (iter (u/cdr things)
+              (cons answer
+                    (u/square (u/car things))))))
+  (iter items nil))
+
+;; This doesn't work either. Explain.
+
+;; It won't work because cons expects an item as first parameter and a list as second. Louis' correction
+;; will throw an error at runtime.
+;; (square-list*** (list 1 2 3 4))
+
+
+;;; Exercise 2.23
+;; The procedure for-each is similar to map. It takes as arguments a procedure and a list of elements.
+;; However, rather than forming a list of the results, for-each just applies the procedure to each of the
+;; elements in turn, from left to right. [...] Give an implementation of for-each.
+
+(defn for-each [proc items]
+  (if (empty? items)
+    true
+    (do (proc (u/car items)) (for-each proc (u/cdr items)))))
+
+;; (for-each (fn [x] (newline) (print x)) (list 57 321 88))
+
+
 (t/deftest tests
   (t/is (= 34 (last-pair (list 23 72 149 34))))
   (t/is (= (list 25 16 9 4 1) (reverse* (list 1 4 9 16 25))))
@@ -92,4 +154,6 @@
   (t/is (= 104561 (count-change 100 uk-coins)))
   (t/is (= (list 1 3 5 7) (same-parity 1 2 3 4 5 6 7)))
   (t/is (= (list 2 4 6) (same-parity 2 3 4 5 6 7)))
-  (t/is (= (list 1 3 9 11 15) (same-parity 1 3 8 9 11 12 15))))
+  (t/is (= (list 1 3 9 11 15) (same-parity 1 3 8 9 11 12 15)))
+  (t/is (= (list 1 4 9 16) (square-list (list 1 2 3 4))))
+  (t/is (= (list 1 4 9 16) (square-list* (list 1 2 3 4)))))
