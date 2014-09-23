@@ -46,7 +46,7 @@
 (defn- cc
   "Recursive helper function to count the change, with added input denominations."
   [amount coin-values]
-  (cond (= amount 0) 1
+  (cond (u/equal-to? amount 0) 1 ; we need equal-to? for floating point comparisons.
         (or (< amount 0) (no-more? coin-values)) 0
         :else (+ (cc amount (except-first-denomination coin-values))
                  (cc (- amount (first-denomination coin-values)) coin-values))))
@@ -56,9 +56,40 @@
   [amount coin-values]
   (cc amount coin-values))
 
+;; As shown below, the order doesn't matter when counting change. The algorithm checks the coins against
+;; the amount independently from the order, taking cdr and car in the branches of the tree recursion.
+
+;; (def us-coins-shuffled (list 1 5 25 10 50))
+;; (cc 100 us-coins-shuffled)
+
+
+;;; Exercise 2.20
+;; The procedures +, *, and list take arbitrary numbers of arguments. [...]
+;; Use this notation to write a procedure same-parity that takes one or more integers and returns a list
+;; of all the arguments that have the same even-odd parity as the first argument.
+
+;; The notation for variable arguments is a little bit different in Clojure (& instead of .) but the
+;; semantic is the same.
+
+(defn same-parity [frst & args]
+  (defn even-odd? [arg]
+    (or (and (even? frst) (even? arg))
+        (and (odd? frst) (odd? arg))))
+
+  (defn helper [args result]
+    (cond  (empty? args) result
+           (even-odd? (u/car args)) (helper (u/cdr args) (cons (u/car args) result))
+           :else (helper (u/cdr args) result)))
+
+  (cons frst (reverse* (helper args []))))
+
 
 (t/run-tests)
 (t/deftest tests
   (t/is (= 34 (last-pair (list 23 72 149 34))))
   (t/is (= (list 25 16 9 4 1) (reverse* (list 1 4 9 16 25))))
-  (t/is (= 292 (cc 100 us-coins))))
+  (t/is (= 292 (count-change 100 us-coins)))
+  (t/is (= 104561 (count-change 100 uk-coins)))
+  (t/is (= (list 1 3 5 7) (same-parity 1 2 3 4 5 6 7)))
+  (t/is (= (list 2 4 6) (same-parity 2 3 4 5 6 7)))
+  (t/is (= (list 1 3 9 11 15) (same-parity 1 3 8 9 11 12 15))))
