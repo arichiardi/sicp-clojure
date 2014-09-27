@@ -1,6 +1,6 @@
-(ns sicp-clojure.1-2-exercises
+(ns sicp-clojure.1-2-exercises-1-21-1-28
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (round)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]
             [sicp-clojure.1-2-samples :as s]))
 
@@ -211,6 +211,7 @@
         (miller-rabin-test n) (fast-prime*? n (- times 1))
         :else false))
 
+(t/run-tests)
 
 ;; Note that some of the tests below are probabilistic and they can produce a different
 ;; results (although with very low probability).

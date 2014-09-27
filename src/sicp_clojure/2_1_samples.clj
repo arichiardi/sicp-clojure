@@ -1,6 +1,6 @@
 (ns sicp-clojure.2-1-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (gcd)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]))
 
 ;;; 2.1.1  Example: Arithmetic Operations for Rational
@@ -47,4 +47,3 @@
   (t/is (equal-rat? (make-rat 5 6) (add-rat one-half one-third)))
   (t/is (equal-rat? (make-rat 1 6) (mul-rat one-half one-third)))
   (t/is (equal-rat? (make-rat 2 3) (add-rat one-third one-third))))
-

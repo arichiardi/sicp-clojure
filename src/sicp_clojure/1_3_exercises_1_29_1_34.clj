@@ -1,6 +1,6 @@
-(ns sicp-clojure.1-3-exercises
+(ns sicp-clojure.1-3-exercises-1-29-1-34
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (expt sqrt abs gcd)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]
             [sicp-clojure.1-3-samples :as s]))
 

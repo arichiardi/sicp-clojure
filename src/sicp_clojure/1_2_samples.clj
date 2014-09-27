@@ -1,6 +1,6 @@
 (ns sicp-clojure.1-2-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (round)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]))
 
 ;;; 1.2.2  Example: Counting change
@@ -100,8 +100,6 @@
 (t/deftest tests
   (t/is (= 4 (count-change 11)))
   (t/is (= 292 (count-change 100)))
-  (t/is (= 4 (count-change* 11)))
-  (t/is (= 292 (count-change* 100)))
   (t/is (= 1 (expt 2 0)))
   (t/is (= 64 (expt 2 6)))
   (t/is (= 512 (expt 2 9)))

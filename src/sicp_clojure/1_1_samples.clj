@@ -1,6 +1,6 @@
 (ns sicp-clojure.1-1-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (expt abs)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]))
 
 ;;; 1.1.7  Example: Square Roots by Newton's Method

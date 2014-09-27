@@ -1,7 +1,5 @@
-(ns sicp-clojure.1-3-exercises
+(ns sicp-clojure.1-3-exercises-1-35-1-39
   (:require [clojure.test :as t]
-            [clojure.java.javadoc :as j]
-            [clojure.tools.trace :as tr]
             [sicp-clojure.utils :as u]
             [sicp-clojure.1-3-samples :as s]))
 

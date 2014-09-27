@@ -1,7 +1,6 @@
-(ns sicp-clojure.1-3-exercises
+(ns sicp-clojure.1-3-exercises-1-40-1-46
   (:require [clojure.test :as t]
-            [clojure.tools.trace :as tr]
-            [clojure.math.numeric-tower :as m :refer (expt floor)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]
             [sicp-clojure.1-3-samples :as s]))
 
@@ -88,7 +87,7 @@
 ;; a guess as argument and keeps improving the guess until it is good enough. Rewrite the sqrt procedure and the fixed-point
 ;; procedure of section 1.3.3 in terms of iterative-improve.
 
-(tr/deftrace iterative-improve [good-enough? improve]
+(defn iterative-improve [good-enough? improve]
   (defn iterate-on-guess [guess]
     (if (good-enough? guess)
       guess

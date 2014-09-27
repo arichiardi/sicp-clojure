@@ -1,4 +1,4 @@
-(ns sicp-clojure.2-1-exercises
+(ns sicp-clojure.2-1-exercises-2-07-2-16
   (:require [clojure.test :as t]
             [sicp-clojure.utils :as u]))
 

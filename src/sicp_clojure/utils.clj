@@ -1,7 +1,7 @@
 (ns sicp-clojure.utils
   (:require [clojure.test :as t]
             [clojure.java.io :as io]
-            [clojure.math.numeric-tower :as m :refer (round floor expt abs)]))
+            [clojure.math.numeric-tower :as m]))
 
 
 (defn make-file-from-resource [name] (io/file (io/resource name)))
@@ -122,24 +122,36 @@
 
 ;; Lists
 
-(defn car
+(def car
   "We can think of car as selecting the first item in the list [sicp, 2.2.1]. The names car
   and cdr derive from the original implementation of Lisp on the IBM 704. [...] Car stands for
   Contents of Address part of Register [sicp, note 2 to 2.1.1]"
-  [l]
-  {:pre [(seq l)]}
-  (first l))
+  first)
 
-(defn cdr
+(def cdr
   "We can think of cdr as selecting the sublist consisting of all but the first item. [sicp, 2.2.1]
   The names car and cdr derive from the original implementation of Lisp on the IBM 704. [...]
   Cdr (pronounced ``could-er'') stands for ``Contents of Decrement part of Register. [sicp, note 2 to 2.1.1]"
-  [l]
-  (rest l))
+  rest)
+
+;; The following works but it can be improved.
+;; (defn append
+;;   "Appends list2 at the end of list1"
+;;   [list1 list2]
+;;   (cond (empty? list1) list2
+;;         (empty? list2) list1
+;;         :else (append (reverse (cons (car list2) (reverse list1))) (cdr list2))))
+
+(defn append
+  "Appends list2 at the end of list1"
+  [list1 list2]
+  (if (empty? list1)
+    list2
+    (cons (car list1) (append (cdr list1) list2))))
 
 (defn map*
   "Map takes as arguments a procedure of one argument and a list, and returns a list of the results produced
-  by applying the procedure to each element in the list:"
+  by applying the procedure to each element in the list. Returns nil (seq-like) if items is empty."
   [proc items]
   (if (empty? items)
     nil
@@ -160,5 +172,8 @@
   (t/is (equal-to? 2 (log 4 2)))
   (t/is (= 1 (car (list 1 2 3 4))))
   (t/is (= (list 2 3 4) (cdr (list 1 2 3 4))))
-  (t/is (= (list 10 2.5 11.6 17) (map* abs (list -10 2.5 -11.6 17))))
-  (t/is (= (list 1 4 9 16) (map* square (list 1 2 3 4)))))
+  (t/is (= (list 10 2.5 11.6 17) (map* m/abs (list -10 2.5 -11.6 17))))
+  (t/is (= (list 1 4 9 16) (map* square (list 1 2 3 4))))
+  (t/is (= (list 1 2 3 4 5 6) (append '(1 2 3) '(4 5 6))))
+  (t/is (= (list 4 5 6) (append (list) '(4 5 6))))
+  (t/is (= (list 1 2 3) (append (list 1 2 3) ()))))

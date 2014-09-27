@@ -1,6 +1,6 @@
 (ns sicp-clojure.1-3-samples
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (sqrt abs)]
+            [clojure.math.numeric-tower :as m]
             [sicp-clojure.utils :as u]))
 
 ;;; 1.3.1  Procedures as Arguments

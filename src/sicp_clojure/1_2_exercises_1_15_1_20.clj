@@ -1,6 +1,6 @@
-(ns sicp-clojure.1-2-exercises
+(ns sicp-clojure.1-2-exercises-1-15-1-20
   (:require [clojure.test :as t]
-            [clojure.math.numeric-tower :as m :refer (expt sqrt abs)]))
+            [clojure.math.numeric-tower :as m]))
 
 ;;; Exercise 1.15
 ;; The sine of an angle (specified in radians) can be computed by making use of the
