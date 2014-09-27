@@ -44,3 +44,7 @@ target/
 # Idea 
 .idea/
 *.iml
+
+# Leiningen
+LICENSE
+.lein-failures
