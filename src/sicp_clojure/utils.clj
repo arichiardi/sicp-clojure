@@ -157,6 +157,10 @@
     nil
     (cons (proc (car items)) (map* proc (cdr items)))))
 
+(def pair?
+  "Tests whether its argument is a pair."
+  list?)
+
 
 (t/deftest tests
   (t/is (empty? (filter #((not (.contains "Value")) %1) (methods-of java.lang.Double "Value"))))

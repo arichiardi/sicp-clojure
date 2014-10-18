@@ -19,11 +19,11 @@
 ;; in reverse order.
 
 (defn reverse* [a]
-  (defn reverse-helper [a new-a]
+  (defn helper [a new-a]
     (if (empty? a)
       new-a
-      (reverse-helper (u/cdr a) (cons (u/car a) new-a))))
-  (reverse-helper a []))
+      (helper (u/cdr a) (cons (u/car a) new-a))))
+  (helper a []))
 
 
 ;;; Exercise 2.19
@@ -77,11 +77,25 @@
         (and (odd? frst) (odd? arg))))
 
   (defn helper [args result]
-    (cond  (empty? args) result
-           (even-odd? (u/car args)) (helper (u/cdr args) (cons (u/car args) result))
-           :else (helper (u/cdr args) result)))
+    (cond (empty? args) result
+          (even-odd? (u/car args)) (helper (u/cdr args) (cons (u/car args) result))
+          :else (helper (u/cdr args) result)))
 
   (cons frst (reverse* (helper args []))))
+
+;; The Clojure's way follows, using a Vector (and conj) to append at the right end and avoid the final reverse.
+
+(defn same-parity* [frst & args]
+  (defn even-odd? [arg]
+    (or (and (even? frst) (even? arg))
+        (and (odd? frst) (odd? arg))))
+
+  (defn helper [args result]
+    (cond (nil? args) result
+          (even-odd? (first args)) (helper (next args) (conj result (first args)))
+          :else (helper (next args) result)))
+
+  (helper args [frst]))
 
 
 ;;; Exercise 2.21
@@ -147,93 +161,20 @@
 ;; (for-each (fn [x] (newline) (print x)) (list 57 321 88))
 
 
-;;; Exercise 2.24
-;; Suppose we evaluate the expression (list 1 (list 2 (list 3 4))). Give the result printed by the interpreter,
-;; the corresponding box-and-pointer structure, and the interpretation of this as a tree
-
-;; Interpreter:
-;;
-;; (1 (2 (3 4)))
-
-;; Box-and-pointer structure (note that the cdr always returns a pair wrapping the "rest" of the list,
-;; try it in the REPL):
-;;
-;; (1(2(3 4)))  ((2(3 4)))
-;;   |⚫|⚫|  →  |⚫|/|
-;;    ↓           ↓
-;;    1         (2(3 4))    ((3 4))
-;;               |⚫|⚫|  →  |⚫|/|
-;;                ↓           ↓
-;;                2          (3 4)       (4)
-;;                           |⚫|⚫|  →  |⚫|/|
-;;                            ↓           ↓
-;;                            3           4
-
-;; Tree:
-;;
-;;   (1(2(3 4)))
-;;    /       \
-;;   1      (2(3 4))
-;;            / \
-;;           2  (3 4)
-;;               /\
-;;              3  4
-
-
-;; Exercise 2.25
-;; Give combinations of cars and cdrs that will pick 7 from each of the following lists:
-;; (1 3 (5 7) 9)
-;; ((7))
-;; (1 (2 (3 (4 (5 (6 7))))))
-
-;; See tests.
-
-
-;; Exercise 2.26
-;; Suppose we define x and y to be two lists:
-
-(def x (list 1 2 3))
-(def y (list 4 5 6))
-
-;; What result is printed by the interpreter in response to evaluating each of the following
-;; expressions:
-
-;; (u/append x y)
-;; ; => (1 2 3 4 5 6)
-
-;; (cons x y)
-;; ; => ((1 2 3) 4 5 6)
-
-;; (list x y)
-;; ; => ((1 2 3) (4 5 6))
-
-
-;; Exercise 2.27
-;; Modify your reverse procedure of exercise 2.18 to produce a deep-reverse procedure that takes
-;; a list as argument and returns as its value the list with its elements reversed and with all
-;; sublists deep-reversed as well.
-
-(defn deep-reverse [a]
-  (defn helper [])
-
-  )
-
-(t/run-tests)
 (t/deftest tests
   (t/is (= 34 (last-pair (list 23 72 149 34))))
   (t/is (= (list 25 16 9 4 1) (reverse* (list 1 4 9 16 25))))
+  (t/is (= (list (list 3 4) (list 1 2)) (reverse* (list (list 1 2) (list 3 4)))))
   (t/is (= 292 (count-change 100 us-coins)))
   (t/is (= 104561 (count-change 100 uk-coins)))
   (t/is (= (list 1 3 5 7) (same-parity 1 2 3 4 5 6 7)))
   (t/is (= (list 2 4 6) (same-parity 2 3 4 5 6 7)))
   (t/is (= (list 1 3 9 11 15) (same-parity 1 3 8 9 11 12 15)))
+  (t/is (= (list 1 3 5 7) (same-parity* 1 2 3 4 5 6 7)))
+  (t/is (= (list 2 4 6) (same-parity* 2 3 4 5 6 7)))
+  (t/is (= (list 1 3 9 11 15) (same-parity* 1 3 8 9 11 12 15)))
   (t/is (= (list 1 4 9 16) (square-list (list 1 2 3 4))))
   (t/is (= (list 1 4 9 16) (square-list* (list 1 2 3 4))))
   (t/is (= 7 (u/car (u/cdr (u/car (u/cdr (u/cdr (list 1 3 (list 5 7) 9))))))))
   (t/is (= 7 (u/car (u/car (list (list 7))))))
-  (t/is (= 7 (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7))))))))))))))))))))
-  (t/is (= (list 1 2 3 4 5 6) (u/append x y)))
-  (t/is (= (list (list 1 2 3) 4 5 6) (cons x y)))
-  (t/is (= (list (list 1 2 3) (list 4 5 6)) (list x y)))
-  (t/is (= (list (list 3 4) (list 1 2)) (reverse* (list (list 1 2) (list 3 4)))))
-  (t/is (= (list (list 4 3) (list 2 1)) (deep-reverse (list (list 1 2) (list 3 4))))))
+  (t/is (= 7 (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (u/car (u/cdr (list 1 (list 2 (list 3 (list 4 (list 5 (list 6 7)))))))))))))))))))))
