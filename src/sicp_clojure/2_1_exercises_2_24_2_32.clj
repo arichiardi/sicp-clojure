@@ -89,7 +89,7 @@
       (cond (empty? a) res
             (u/pair? car) (helper cdr (helper car res))
             :else (helper cdr (cons car res)))))
-  (reverse0(helper a [])))
+  (reverse(helper a [])))
 
 ;; For testing:
 
@@ -142,7 +142,51 @@
   (+ (branch-weight (left-branch mobile))
      (branch-weight (right-branch mobile))))
 
-;; For testing:
+
+;; (defn total-weight* [mobile]
+
+;; Continuation passing style solution, see the following thread for a mind-blowing implementation of
+;; tree traversal using cps and trampoline:
+;; http://stackoverflow.com/questions/19424327/printing-a-tree-lazily-in-newick-format
+
+(defn total-weight-cps [mobile]
+  (letfn
+    [(branch-weight-cps
+      [branch kont]
+      (let [structure (branch-structure branch)]
+        (if (mobile? (branch-structure branch))
+          (kont (traverse-mobile-cps structure identity))
+          (kont structure))))
+
+     (traverse-mobile-cps
+      [mobile kont]
+      (branch-weight-cps (left-branch mobile)
+                         (fn [left-weight]
+                           (branch-weight-cps (right-branch mobile)
+                                              (fn [right-weight] (kont (+ left-weight right-weight)))))))]
+    (traverse-mobile-cps mobile identity)))
+
+;; With clojure's constructs (and the non stack-consuming trampoline):
+;; http://stackoverflow.com/questions/26450982/sicp-continuation-passing-style-and-clojures-trampoline
+
+(defn total-weight* [mobile]
+  (letfn
+    [(branch-weight-cps
+      [branch kont]
+      (let [structure (branch-structure branch)]
+        (if (mobile? (branch-structure branch))
+          (do (println "then " structure) (fn [] (kont (trampoline traverse-mobile-cps structure identity))))
+          (do (println "else " structure) (fn [] (kont structure))))))
+
+     (traverse-mobile-cps
+      [mobile kont]
+      (branch-weight-cps (left-branch mobile)
+                         (fn [left-weight]
+                           (branch-weight-cps (right-branch mobile)
+                                              (fn [right-weight] #(kont (+ left-weight right-weight)))))))]
+    (trampoline traverse-mobile-cps mobile identity)))
+
+;; Some def for testing:
 
 ;; Simple
 (def branch11 (make-branch 1 1))
@@ -158,7 +202,7 @@
 (def branch7m3622 (make-branch 7 mobile36-22))
 
 (def mobile11-5m1143 (make-mobile branch11 branch5m1143))
-(def mobile5m1143-b2243 (make-mobile branch5m1143 branch7m3622))
+(def mobile5m1143-7m3622 (make-mobile branch5m1143 branch7m3622))
 
 
 (t/deftest tests
@@ -177,4 +221,6 @@
   (t/is (= 6 (branch-weight branch36)))
   (t/is (= 8 (branch-weight branch7m3622)))
   (t/is (= 4 (total-weight mobile11-43)))
-  (t/is (= 12 (total-weight mobile5m1143-b2243))))
+  (t/is (= 12 (total-weight mobile5m1143-7m3622)))
+  (t/is (= 12 (total-weight-cps mobile5m1143-7m3622)))
+  (t/is (= 12 (total-weight* mobile5m1143-7m3622))))
