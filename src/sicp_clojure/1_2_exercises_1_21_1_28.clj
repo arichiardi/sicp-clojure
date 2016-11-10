@@ -211,8 +211,6 @@
         (miller-rabin-test n) (fast-prime*? n (- times 1))
         :else false))
 
-(t/run-tests)
-
 ;; Note that some of the tests below are probabilistic and they can produce a different
 ;; results (although with very low probability).
 (t/deftest tests
@@ -235,3 +233,5 @@
   (t/is (= false (fast-prime*? 2465 50))) ; Charmichael number
   (t/is (= false (fast-prime*? 2821 50))) ; Charmichael number
   (t/is (= false (fast-prime*? 6601 50)))) ; Charmichael number
+
+(t/run-tests)
